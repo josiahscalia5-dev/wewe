@@ -48,18 +48,17 @@ def draw(stage, im, left, top, w, h, rot=None, pivot=None, alpha=1.0):
 
 
 def main(out):
-    pan = -0.60 * 0.22
+    pan = -0.60 + 0.45  # player start + camera shoulder offset (Level3Tuning)
     sx = lambda x, z: CX + F * (x - pan) / z
     sy = lambda y, z: HZ + F * (CAMH - y) / z
     ppm = lambda z: F / z
     stage = Image.new("RGBA", (W, H), (10, 12, 30, 255))
     bg = layer("bg_warehouse")
     shift = -F * pan / 8
-    draw(stage, bg, -48 + shift, -30, 1176, 2400)
+    draw(stage, bg, -168 + shift, -30, 1632, 2400)
 
     items = []
-    props = [("cover_crates_mid_2", -1.55, 8.3), ("cover_crates_mid_3", 1.35, 3.95), ("cover_forklift_right", 0.80, 3.0),
-             ("cover_crates_left", -0.62, 2.85), ("cover_crates_mid_1", 0.02, 3.3)]
+    props = [("cover_forklift_right", 0.85, 3.3), ("cover_crates_mid_1", 1.47, 2.85), ("cover_crates_left", -1.07, 2.75)]
     for n, x, z in props:
         items.append((z, "prop", (n, x, z)))
     rz = F * CAMH / (0.66 * H - HZ)
@@ -88,14 +87,21 @@ def main(out):
             for n in ("drone_body", "drone_rotor_2"):
                 draw(stage, layer(n), px - 400 * s, py - 400 * s, 800 * s, 800 * s)
     # Astronaut + arm.
-    s = ppm(2.1) / 780
-    ax, ay = sx(-0.60, 2.1), sy(0, 2.1)
+    s = ppm(1.85) / 780
+    ax, ay = sx(-0.60, 1.85), sy(0, 1.85)  # astronaut at the player start
     draw(stage, layer("astro_fire"), ax - 450 * s, ay - 1080 * s, 900 * s, 1100 * s)
     shx, shy = ax + (608 - 450) * s, ay + (520 - 1080) * s
     aimx, aimy = 0.52 * W, 0.485 * H
     ang = math.degrees(math.atan2(aimy - shy, aimx - shx))
     draw(stage, layer("astro_arm_blaster"), shx - 96 * s, shy - 170 * s, 760 * s, 320 * s, rot=ang, pivot=(shx, shy))
-    stage.convert("RGB").save(out)
+    if "--ref" in sys.argv:
+        ref = Image.open(os.path.join(ROOT, "reference/2376.png")).convert("RGBA").crop((32, 26, 825, 1803)).resize((W, H), Image.LANCZOS)
+        c = Image.new("RGB", (W * 3 + 40, H))
+        for i, im in enumerate((ref, stage, Image.blend(ref, stage, 0.5))):
+            c.paste(im.convert("RGB"), (i * (W + 20), 0))
+        c.save(out)
+    else:
+        stage.convert("RGB").save(out)
     print("preview written", out)
 
 

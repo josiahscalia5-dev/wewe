@@ -6,12 +6,13 @@ package com.blastcollect.core
  * replacement production art must keep them or update this file.
  */
 object ArtMetrics {
-    // bg_warehouse.png covers this stage rectangle (extra width for the parallax pan).
-    const val BG_STAGE_LEFT = -48f
+    // bg_warehouse.png covers this stage rectangle (extra width for the follow camera's
+    // pan across the whole strip, rendered at panX = 0).
+    const val BG_STAGE_LEFT = -168f
     const val BG_STAGE_TOP = -30f
-    const val BG_STAGE_W = 1176f
+    const val BG_STAGE_W = 1632f
     const val BG_STAGE_H = 2400f
-    const val BG_PX_W = 1568
+    const val BG_PX_W = 2176
     const val BG_PX_H = 3200
 
     // Astronaut body frames (astro_*.png), seen from behind.

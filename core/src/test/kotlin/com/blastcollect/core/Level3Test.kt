@@ -221,9 +221,9 @@ class Level3Test {
     @Test
     fun coverHidesThePlayer() {
         val g = quietLevel()
-        // Drag right until the left crate stack snaps the astronaut into cover.
-        g.beginMove(400f)
-        g.updateMove(560f)
+        // Drag left past the left crate stack: the astronaut snaps into cover there.
+        g.beginMove(600f)
+        g.updateMove(600f - g.dragPixelsFor(0.6f))
         g.run(1.5f)
         g.endMove()
         assertEquals(0, g.player.cover)
@@ -236,15 +236,17 @@ class Level3Test {
     @Test
     fun dragPastCoverLeavesIt() {
         val g = quietLevel()
-        g.beginMove(400f)
-        g.updateMove(560f)
+        val snapFinger = 600f - g.dragPixelsFor(0.6f)
+        g.beginMove(600f)
+        g.updateMove(snapFinger)
         g.run(1.5f)
         assertEquals(0, g.player.cover)
-        g.updateMove(700f)
+        // Keep dragging the same way: past the exit distance the astronaut leaves cover.
+        g.updateMove(snapFinger - g.dragPixelsFor(0.35f))
         g.run(1f)
         g.endMove()
         assertEquals(-1, g.player.cover)
-        assertTrue(g.player.x > g.tuning.coverX[0] + 0.1f)
+        assertTrue(g.player.x < g.tuning.coverX[0] - 0.1f)
         assertTrue(g.player.exposed)
     }
 
@@ -253,9 +255,9 @@ class Level3Test {
         val g = quietLevel()
         g.debugForceChase()
         g.robot.z = g.tuning.playerZ + 3f
-        // Run for the centre crate.
-        g.beginMove(400f)
-        g.updateMove(560f)
+        // Run for the nearest cover (left crate stack).
+        g.beginMove(600f)
+        g.updateMove(600f - g.dragPixelsFor(0.6f))
         g.run(1.2f)
         g.endMove()
         assertTrue(g.player.ducked)

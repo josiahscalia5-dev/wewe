@@ -6,14 +6,14 @@ data class Prop(val layer: String, val x: Float, val z: Float, val cover: Int = 
 object Level3Props {
     /**
      * Cover objects sit just beyond the front strip, lined up on screen with the three
-     * cover spots in [Level3Tuning.coverX]; the other crates are scenery the robot walks
-     * past. Positions follow the composition of reference/2376.png.
+     * cover spots in [Level3Tuning.coverX]. At the start the forklift stands where
+     * reference/2376.png shows it; mid-ground crates are part of bg_warehouse.
      */
     val all = listOf(
-        // The two scenery crate piles (cover_crates_mid_2/3) were dropped: they cluttered
-        // the middle of the play area without being part of the gameplay.
-        Prop("cover_forklift_right", 0.80f, 3.0f, cover = 2),
-        Prop("cover_crates_left", -0.62f, 2.85f, cover = 0),
-        Prop("cover_crates_mid_1", 0.02f, 3.3f, cover = 1),
+        // Each cover prop stands just beyond the strip where it hides the astronaut when he
+        // is at its cover spot (the follow camera keeps him in the lower-left of the screen).
+        Prop("cover_forklift_right", 0.85f, 3.3f, cover = 1),
+        Prop("cover_crates_mid_1", 1.47f, 2.85f, cover = 2),
+        Prop("cover_crates_left", -1.07f, 2.75f, cover = 0),
     )
 }

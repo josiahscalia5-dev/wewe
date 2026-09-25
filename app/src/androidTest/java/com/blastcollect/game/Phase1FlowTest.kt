@@ -397,11 +397,13 @@ class Phase1FlowTest {
                 .map { l.tuning.coverX[it] }
                 .minByOrNull { kotlin.math.abs(it - l.player.x) }!!
         }
-        val targetStageX = onMain { level().camera.screenX(coverX * (1f - level().tuning.cameraFollow) + level().camera.panX, level().tuning.playerZ) }
-        val startStageX = onMain { level().camera.screenX(level().player.x, level().tuning.playerZ) }
-        val (sx0, _) = screenPoint(startStageX, 0f)
-        val (sx1, _) = screenPoint(targetStageX, 0f)
-        press(sx0, vh * 0.82f, sx1, vh * 0.82f, moveMs = 500, holdMs = 900)
+        // Follow camera: the drag length (not the finger position) decides where he goes.
+        val dragView = onMain {
+            val l = level()
+            val dx = coverX - l.player.x
+            (l.dragPixelsFor(dx + kotlin.math.sign(dx) * 0.05f)) * ActiveGame.view!!.mapping.scale
+        }
+        press(vw * 0.5f - dragView / 2f, vh * 0.82f, vw * 0.5f + dragView / 2f, vh * 0.82f, moveMs = 500, holdMs = 900)
         waitFor("astronaut ducks behind cover", 3000) { level().player.ducked }
         val alertsBefore = onMain { level().alerts }
         onMain {

@@ -13,15 +13,21 @@ class Level3Tuning(
     val timerWarningAt: Float = 10f,
 
     // Player (front strip)
-    val playerZ: Float = 2.1f,
-    val playerMinX: Float = -0.64f,
-    val playerMaxX: Float = 0.64f,
-    /** Far left of the strip: the astronaut starts where reference/2376 shows him. */
+    val playerZ: Float = 1.85f,
+    val playerMinX: Float = -1.3f,
+    val playerMaxX: Float = 1.6f,
     val playerStartX: Float = -0.60f,
     val playerSpeed: Float = 1.05f,
-    val cameraFollow: Float = 0.22f,
-    /** Cover spots on the front strip: left crate stack, centre crate, right forklift. */
-    val coverX: FloatArray = floatArrayOf(-0.40f, 0.02f, 0.50f),
+    /**
+     * Third-person follow camera (reference/2376): the camera sits this far to the right
+     * of the astronaut, so he always stands in the lower-left of the screen and the
+     * warehouse pans past as he moves.
+     */
+    val cameraShoulder: Float = 0.45f,
+    /** Metres the astronaut moves per stage px of horizontal drag in the move zone. */
+    val dragMetresPerPx: Float = 0.0026f,
+    /** Cover spots on the front strip: left crate stack, forklift, right crate stack. */
+    val coverX: FloatArray = floatArrayOf(-1.05f, 0.85f, 1.45f),
     val coverSnap: Float = 0.085f,
     /** How far past the cover spot a drag must reach before the astronaut leaves cover. */
     val coverExitDrag: Float = 0.16f,
@@ -56,10 +62,10 @@ class Level3Tuning(
     val droneScreenBottom: Float = 1150f,
 
     // Robot
-    val robotHeight: Float = 2.2f,
-    val robotHalfWidth: Float = 0.42f,
-    val robotMinX: Float = -1.7f,
-    val robotMaxX: Float = 1.7f,
+    val robotHeight: Float = 1.8f,
+    val robotHalfWidth: Float = 0.4f,
+    val robotMinX: Float = -2.2f,
+    val robotMaxX: Float = 2.6f,
     val robotPatrolMinZ: Float = 4.6f,
     val robotPatrolMaxZ: Float = 7.4f,
     val robotPatrolSpeed: Float = 0.8f,

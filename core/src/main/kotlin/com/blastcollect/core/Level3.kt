@@ -39,6 +39,10 @@ class Level3(
 
     val player = Player(tuning.playerStartX)
     val robot = Robot(1.35f, 6.2f)
+
+    init {
+        camera.panX = player.x + tuning.cameraShoulder
+    }
     val drones = mutableListOf<Drone>()
     val bolts = mutableListOf<Bolt>()
     val effects = mutableListOf<Effect>()
@@ -201,11 +205,11 @@ class Level3(
 
     // ---------------------------------------------------------------- player
 
-    private fun dragTarget(): Float {
-        val metresPerPx = tuning.playerZ / camera.focal
-        val gain = 1f / (1f - tuning.cameraFollow)
-        return dragPlayerStart + (dragFinger - dragFingerStart) * metresPerPx * gain
-    }
+    private fun dragTarget(): Float =
+        dragPlayerStart + (dragFinger - dragFingerStart) * tuning.dragMetresPerPx
+
+    /** Horizontal drag (stage px) that moves the astronaut by [dx] metres. */
+    fun dragPixelsFor(dx: Float): Float = dx / tuning.dragMetresPerPx
 
     private fun updatePlayer(dt: Float) {
         val p = player
@@ -251,7 +255,7 @@ class Level3(
 
         p.velocity = (p.x - prevX) / dt
         if (abs(p.velocity) > 0.05f) p.runTime += dt else p.runTime = 0f
-        camera.panX = p.x * tuning.cameraFollow
+        camera.panX = p.x + tuning.cameraShoulder
     }
 
     private fun moveBy(dx: Float) {
@@ -777,7 +781,7 @@ class Level3(
         player.cover = -1
         player.ignoreCover = -1
         player.stand = 1f
-        camera.panX = player.x * tuning.cameraFollow
+        camera.panX = player.x + tuning.cameraShoulder
     }
 
     fun debugSetTimeLeft(seconds: Float) {
@@ -860,7 +864,7 @@ class Level3(
         player.x = tuning.playerStartX
         player.cover = -1
         player.stand = 1f
-        camera.panX = player.x * tuning.cameraFollow
+        camera.panX = player.x + tuning.cameraShoulder
         drones.clear()
         spawnTimer = 999f
         debugSpawnDroneAtScreen(0.33f * Stage.W, 0.365f * Stage.H, 4.3f, frozen = true).age = 0.4f

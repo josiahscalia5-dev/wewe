@@ -9,14 +9,15 @@ const rb = (w, h, d, r = 0.05, s = 4) => new RoundedBoxGeometry(w, h, d, s, r);
 
 function mats(eyeBoost = 1) {
   return {
-    white: plastic(0x5d6070, { rough: 0.36, clearcoat: 0.7, env: 0.35 }),
-    grey: plastic(0x3a3d49, { rough: 0.45, clearcoat: 0.4, env: 0.4 }),
-    maroon: plastic(0x5a1422, { rough: 0.4, clearcoat: 0.6, env: 0.45 }),
-    red: plastic(0x9a1c28, { rough: 0.34, clearcoat: 0.8, env: 0.5 }),
-    steel: metal(0x2a2c35, { rough: 0.48, env: 0.5 }),
+    // Reference 2376: mauve-grey armour plates over maroon, gunmetal joints.
+    white: plastic(0x8e7482, { rough: 0.34, clearcoat: 0.7, env: 0.4 }),
+    grey: plastic(0x4c3040, { rough: 0.42, clearcoat: 0.5, env: 0.4 }),
+    maroon: plastic(0x5e1a2c, { rough: 0.38, clearcoat: 0.6, env: 0.45 }),
+    red: plastic(0xc0283a, { rough: 0.32, clearcoat: 0.8, env: 0.5 }),
+    steel: metal(0x32282f, { rough: 0.45, env: 0.5 }),
     black: matte(0x121318, { rough: 0.6 }),
     visor: plastic(0x0b0c12, { rough: 0.2, clearcoat: 1, env: 0.8 }),
-    eye: emissive(0xff2a12, 1.9 * eyeBoost, eyeBoost > 1 ? 0xff2a0a : 0xff1a06),
+    eye: emissive(0xff4418, 2.4 * eyeBoost, eyeBoost > 1 ? 0xff3a0a : 0xff2a06),
     eyeCore: emissive(0xffc4a8, 1.7 * eyeBoost, 0xff3a14),
     chestLight: emissive(0xff3b22, 1.6 * eyeBoost, 0xff2008),
   };
@@ -71,8 +72,8 @@ export function buildRobot({ eyeBoost = 1 } = {}) {
   head.add(mesh(rb(0.7, 0.1, 0.58, 0.04), m.steel, { y: 0.0 }));
   head.add(mesh(rb(0.56, 0.24, 0.08, 0.07), m.visor, { y: 0.2, z: 0.28 }));
   for (const sx of [-1, 1]) {
-    head.add(mesh(rb(0.19, 0.15, 0.05, 0.06), m.eye, { x: sx * 0.13, y: 0.2, z: 0.325, cast: false }));
-    head.add(mesh(rb(0.09, 0.06, 0.04, 0.025), m.eyeCore, { x: sx * 0.13, y: 0.205, z: 0.345, cast: false }));
+    head.add(mesh(rb(0.22, 0.17, 0.05, 0.07), m.eye, { x: sx * 0.13, y: 0.2, z: 0.325, cast: false }));
+    head.add(mesh(rb(0.12, 0.08, 0.04, 0.03), m.eyeCore, { x: sx * 0.13, y: 0.205, z: 0.345, cast: false }));
     head.add(mesh(new THREE.CylinderGeometry(0.09, 0.09, 0.08, 20), m.steel, { x: sx * 0.36, y: 0.2, rz: Math.PI / 2 }));
     head.add(mesh(new THREE.CylinderGeometry(0.055, 0.055, 0.1, 16), m.red, { x: sx * 0.4, y: 0.2, rz: Math.PI / 2 }));
   }
@@ -90,6 +91,7 @@ export function buildRobot({ eyeBoost = 1 } = {}) {
     // Shoulder armour.
     shoulder.add(mesh(rb(0.46, 0.34, 0.52, 0.14), m.white, { x: sx * 0.1, y: 0.1 }));
     shoulder.add(mesh(rb(0.48, 0.08, 0.54, 0.03), m.red, { x: sx * 0.1, y: -0.04 }));
+    shoulder.add(mesh(new THREE.SphereGeometry(0.055, 14, 10), m.chestLight, { x: sx * 0.34, y: 0.12, z: 0.12, cast: false }));
     const upper = group();
     shoulder.add(upper);
     upper.add(limb(0.34, 0.13, 0.12, m.steel));
@@ -146,19 +148,20 @@ export function buildRobot({ eyeBoost = 1 } = {}) {
 export function poseRobot(r, pose, phase = 0) {
   const a = phase * Math.PI * 2;
   const reset = () => {
-    r.hips.position.y = 0.97;
+    // Crouched, arms-out stalking stance (reference 2376).
+    r.hips.position.y = 0.9;
     r.hips.rotation.set(0, 0, 0);
-    r.torso.rotation.set(0.16, 0, 0);
-    r.head.rotation.set(-0.12, 0, 0);
+    r.torso.rotation.set(0.3, 0, 0);
+    r.head.rotation.set(-0.22, 0, 0);
     for (const s of ['L', 'R']) {
       const sx = s === 'L' ? -1 : 1;
-      r.arms[s].shoulder.rotation.set(0, 0, sx * 0.12);
-      r.arms[s].elbow.rotation.set(-0.35, 0, 0);
+      r.arms[s].shoulder.rotation.set(-0.35, 0, sx * 0.48);
+      r.arms[s].elbow.rotation.set(-0.8, 0, -sx * 0.2);
       r.arms[s].hand.rotation.set(0, 0, 0);
-      for (const f of r.arms[s].fingers) f.rotation.set(0, 0, 0);
-      r.legs[s].hip.rotation.set(-0.18, 0, sx * 0.06);
-      r.legs[s].knee.rotation.set(0.32, 0, 0);
-      r.legs[s].ankle.rotation.set(-0.14, 0, 0);
+      for (const f of r.arms[s].fingers) f.rotation.set(0.35, 0, 0);
+      r.legs[s].hip.rotation.set(-0.35, 0, sx * 0.2);
+      r.legs[s].knee.rotation.set(0.6, 0, 0);
+      r.legs[s].ankle.rotation.set(-0.25, 0, -sx * 0.2);
     }
   };
   reset();
@@ -170,13 +173,17 @@ export function poseRobot(r, pose, phase = 0) {
     r.legs.R.knee.rotation.x = 0.25 + Math.max(0, Math.sin(a - Math.PI / 2)) * 0.8;
     r.legs.L.ankle.rotation.x = -r.legs.L.hip.rotation.x * 0.5 - r.legs.L.knee.rotation.x * 0.4;
     r.legs.R.ankle.rotation.x = -r.legs.R.hip.rotation.x * 0.5 - r.legs.R.knee.rotation.x * 0.4;
-    r.arms.L.shoulder.rotation.x = swing * 0.7;
-    r.arms.R.shoulder.rotation.x = -swing * 0.7;
-    r.arms.L.elbow.rotation.x = -0.45 - Math.max(0, swing) * 0.4;
-    r.arms.R.elbow.rotation.x = -0.45 - Math.max(0, -swing) * 0.4;
-    r.hips.position.y = 0.97 - Math.abs(Math.cos(a)) * 0.05;
-    r.torso.rotation.y = Math.sin(a) * 0.08;
-    r.torso.rotation.x = 0.2;
+    r.legs.L.hip.rotation.x -= 0.2;
+    r.legs.R.hip.rotation.x -= 0.2;
+    r.legs.L.knee.rotation.x += 0.25;
+    r.legs.R.knee.rotation.x += 0.25;
+    r.arms.L.shoulder.rotation.x = -0.35 + swing * 0.5;
+    r.arms.R.shoulder.rotation.x = -0.35 - swing * 0.5;
+    r.arms.L.elbow.rotation.x = -0.8 - Math.max(0, swing) * 0.3;
+    r.arms.R.elbow.rotation.x = -0.8 - Math.max(0, -swing) * 0.3;
+    r.hips.position.y = 0.9 - Math.abs(Math.cos(a)) * 0.05;
+    r.torso.rotation.y = Math.sin(a) * 0.1;
+    r.torso.rotation.x = 0.32;
     r.hips.rotation.z = Math.sin(a) * 0.03;
   } else if (pose === 'scan') {
     r.head.rotation.y = 0.28;

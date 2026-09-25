@@ -35,7 +35,7 @@ Regenerate the placeholders: `cd tools/art && npm install && node render.mjs && 
 | `nav_shop` | interim placeholder | 2D canvas | 256×256 |  |
 | `nav_profile` | interim placeholder | 2D canvas | 256×256 |  |
 | **Level 3** | | | | |
-| `bg_warehouse` | interim placeholder | 3D (three.js scene through the game camera) | 1568×3200 |  |
+| `bg_warehouse` | interim placeholder | 3D (models/level3hall.js) through the game camera | 2176×3200 | wide hall of reference 2376; extra width for the follow camera's pan |
 | `cover_crates_left` | interim placeholder | 3D render | 518×626 |  |
 | `cover_forklift_right` | interim placeholder | 3D render | 1077×830 |  |
 | `cover_crates_mid_1` | interim placeholder | 3D render | 429×582 |  |

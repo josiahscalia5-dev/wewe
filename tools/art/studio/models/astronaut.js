@@ -12,10 +12,11 @@ export function astroMats() {
     glass: glass(0x080b1e, { rough: 0.12, env: 0.55 }),
     suit: plastic(0x1c2236, { rough: 0.55, clearcoat: 0.2, env: 0.5 }),
     suitDark: matte(0x10131f, { rough: 0.7 }),
-    pack: plastic(0x2a2c35, { rough: 0.5, clearcoat: 0.3, env: 0.5 }),
-    packDark: matte(0x17181e, { rough: 0.7 }),
-    orange: plastic(0xb86a1e, { rough: 0.45, clearcoat: 0.4, env: 0.5 }),
-    orangeDark: plastic(0x7a4214, { rough: 0.5, env: 0.4 }),
+    // Reference 2376: charcoal-navy pack with brown leather pouches and straps.
+    pack: plastic(0x252a3c, { rough: 0.5, clearcoat: 0.3, env: 0.5 }),
+    packDark: matte(0x15171f, { rough: 0.7 }),
+    orange: plastic(0x9c5a22, { rough: 0.5, clearcoat: 0.3, env: 0.45 }),
+    orangeDark: plastic(0x5e3212, { rough: 0.55, env: 0.4 }),
     silver: metal(0xc9ced8, { rough: 0.25, env: 1.0 }),
     white: plastic(0xe6e9f1, { rough: 0.35, clearcoat: 0.6, env: 0.7 }),
     black: plastic(0x121318, { rough: 0.5, clearcoat: 0.3, env: 0.4 }),
@@ -120,6 +121,10 @@ export function buildAstronaut({ pose = 'idle', phase = 0, dir = 1, withArm = fa
   pack.add(mesh(rb(0.3, 0.14, 0.04, 0.03), m.packDark, { y: -0.05, z: 0.08 }));
   pack.add(mesh(rb(0.26, 0.1, 0.05, 0.03), m.pack, { y: 0.1, z: 0.075 }));
   pack.add(mesh(rb(0.08, 0.02, 0.02, 0.008), m.silver, { y: 0.1, z: 0.105 }));
+  // Big leather pouch on the right with a buckle, and a small one lower left.
+  pack.add(mesh(rb(0.15, 0.2, 0.08, 0.035), m.orange, { x: 0.13, y: -0.09, z: 0.1 }));
+  pack.add(mesh(rb(0.05, 0.03, 0.02, 0.008), m.silver, { x: 0.13, y: -0.04, z: 0.145 }));
+  pack.add(mesh(rb(0.12, 0.1, 0.06, 0.03), m.orangeDark, { x: -0.12, y: -0.13, z: 0.1 }));
   for (const sx of [-1, 1]) {
     pack.add(mesh(rb(0.08, 0.26, 0.12, 0.03), m.orange, { x: sx * 0.22, y: -0.02, z: 0.0 }));
     pack.add(mesh(rb(0.085, 0.04, 0.125, 0.01), m.orangeDark, { x: sx * 0.22, y: -0.06, z: 0.0 }));
@@ -154,8 +159,8 @@ export function buildAstronaut({ pose = 'idle', phase = 0, dir = 1, withArm = fa
   helmet.add(mesh(new THREE.TorusGeometry(0.2, 0.04, 16, 48), m.white, { rx: Math.PI / 2, y: -0.26 }));
   // Ear lights.
   for (const sx of [-1, 1]) {
-    helmet.add(mesh(new THREE.CylinderGeometry(0.075, 0.075, 0.05, 32), m.earRing, { x: sx * HR * 0.98, rz: Math.PI / 2 }));
-    helmet.add(mesh(new THREE.CylinderGeometry(0.055, 0.055, 0.056, 32), m.ear, { x: sx * HR * 1.0, rz: Math.PI / 2, cast: false }));
+    helmet.add(mesh(new THREE.CylinderGeometry(0.095, 0.095, 0.06, 32), m.earRing, { x: sx * HR * 0.98, rz: Math.PI / 2 }));
+    helmet.add(mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.066, 32), m.ear, { x: sx * HR * 1.0, rz: Math.PI / 2, cast: false }));
   }
 
   // Right arm stub (shoulder pad) is part of the body; the arm itself is a separate layer.
@@ -174,7 +179,7 @@ export function buildAstronaut({ pose = 'idle', phase = 0, dir = 1, withArm = fa
     ra.add(mesh(rb(0.1, 0.2, 0.1, 0.045), m.white, { y: -0.1 }));
     ra.add(mesh(new THREE.SphereGeometry(0.05, 14, 10), m.black, { y: -0.21 }));
     ra.add(mesh(rb(0.1, 0.1, 0.1, 0.04), m.black, { y: -0.3 }));
-    const gun = buildBlaster({ len: 0.46 });
+    const gun = buildChunkyBlaster(m);
     gun.position.set(0.0, -0.33, 0.05);
     gun.rotation.z = pose === 'duck' ? 1.45 : -0.6;
     ra.add(gun);
@@ -194,9 +199,35 @@ export function buildArm(m = astroMats()) {
   arm.add(mesh(new THREE.SphereGeometry(0.058, 16, 12), m.black, { x: 0.21 }));
   arm.add(mesh(rb(0.16, 0.1, 0.1, 0.045), m.white, { x: 0.3 }));
   arm.add(mesh(rb(0.1, 0.11, 0.11, 0.045), m.black, { x: 0.4, y: 0.005 }));
-  const gun = buildBlaster({ len: 0.5 });
-  // Grip sits in the glove; barrel continues along the arm.
+  const gun = buildChunkyBlaster(m);
+  // Grip sits in the glove; barrel continues along the arm (muzzle at x ≈ 0.815 m).
   gun.position.set(0.315, 0.026, 0);
   arm.add(gun);
   return arm;
+}
+
+/**
+ * Chunky sci-fi blaster of reference 2376, along +x from the grip at the origin, muzzle
+ * at x = 0.5: dark gunmetal body, red top panel with a glowing orange window, cyan light
+ * strip, blue barrel with glowing rings and a silver muzzle.
+ */
+export function buildChunkyBlaster(m = astroMats()) {
+  const g = group();
+  const gun = plastic(0x1e2336, { rough: 0.32, clearcoat: 0.8, env: 0.7 });
+  const red = plastic(0xc4262c, { rough: 0.3, clearcoat: 1, env: 0.8 });
+  const blue = plastic(0x2a64d8, { rough: 0.25, clearcoat: 1, env: 0.9 });
+  const windowGlow = emissive(0xff9a3a, 1.6, 0xff7a1a);
+  const cyan = emissive(0x3ae0ff, 1.4, 0x1ab0ff);
+  // Grip + trigger guard.
+  g.add(mesh(rb(0.07, 0.15, 0.08, 0.025), gun, { x: 0.02, y: -0.09, rz: -0.2 }));
+  // Main body.
+  g.add(mesh(rb(0.3, 0.14, 0.13, 0.04), gun, { x: 0.15, y: 0.0 }));
+  g.add(mesh(rb(0.24, 0.05, 0.12, 0.02), red, { x: 0.16, y: 0.085 }));
+  g.add(mesh(rb(0.12, 0.03, 0.08, 0.012), windowGlow, { x: 0.18, y: 0.112, cast: false }));
+  for (const z of [-0.067, 0.067]) g.add(mesh(rb(0.18, 0.025, 0.01, 0.006), cyan, { x: 0.15, y: -0.02, z, cast: false }));
+  // Barrel.
+  g.add(mesh(new THREE.CylinderGeometry(0.052, 0.058, 0.2, 28), blue, { x: 0.39, rz: Math.PI / 2 }));
+  for (const x of [0.33, 0.42]) g.add(mesh(new THREE.TorusGeometry(0.058, 0.01, 10, 28), cyan, { x, ry: Math.PI / 2, cast: false }));
+  g.add(mesh(new THREE.CylinderGeometry(0.066, 0.06, 0.04, 28), m.silver, { x: 0.49, rz: Math.PI / 2 }));
+  return g;
 }

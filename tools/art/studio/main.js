@@ -13,6 +13,7 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { getRenderer, SS } from './core.js';
 import { buildHomeHero } from './models/homehero.js';
 import { buildHomeScene, HOME_CAM } from './models/homescene.js';
+import { buildLevel3Hall } from './models/level3hall.js';
 import { buildBlaster } from './models/astronaut.js';
 import * as flat from './flat.js';
 
@@ -53,12 +54,15 @@ add('drone_hit_flash', () => renderDrone({ parts: 'all', flash: true }, { r1: 40
 
 // ------------------------------------------------------------------ robot (900x1100, 450 px/m)
 // Rendered 6 m from the camera (mid-ground patrol depth), feet at (450, 1075).
-const ROBOT_H = 2.2;
+const ROBOT_H = 1.8; // Level3Tuning.robotHeight (reference 2376: ~1.8 m)
 function renderRobot(pose, phase, facing, eyeBoost = 1) {
   const W = 900, H = 1100, Z = 6, f = 450 * Z;
   const cam = stageCamera({ f, cx: 450, cy: 1075 - (f * 1.7) / Z, W, H });
   const scene = new THREE.Scene();
-  characterLights(scene, { key: 0.9, rimL: 4.4, rimR: 3.2, fill: 0.35, keyDir: [-2.5, 4, -2] });
+  characterLights(scene, { key: 1.3, rimL: 4.4, rimR: 3.6, fill: 0.5, keyDir: [-2.5, 4, -2] });
+  const pink = new THREE.PointLight(0xff4aa8, 6, 5, 1.2);
+  pink.position.set(1.8, 1.6, -4.6);
+  scene.add(pink);
   const r = buildRobot({ eyeBoost });
   poseRobot(r, 'scan');
   const box = new THREE.Box3().setFromObject(r.root);
@@ -189,16 +193,17 @@ function bloomComposer(scene, cam, W, H, { strength = 0.85, radius = 0.5, thresh
   return c;
 }
 
-// bg_warehouse (1568x3200) covers stage rect (-48,-30)-(1128,2370) at 0.75 stage px/px,
-// rendered through the exact game camera (focal 1400 stage px, horizon y 1170).
+// bg_warehouse (2176x3200) covers stage rect (-168,-30)-(1464,2370) at 0.75 stage px/px,
+// rendered through the exact game camera at panX = 0 (focal 1400 stage px, horizon 1170).
+// The follow camera slides it by -focal*panX/8 as the astronaut moves.
 add('bg_warehouse', () => {
-  const W = 1568, H = 3200, k = 1 / 0.75;
-  const cam = stageCamera({ f: 1400 * k, cx: (540 + 48) * k, cy: (1170 + 30) * k, W, H, far: 300 });
-  const scene = buildWarehouse({ W: W * SS, H: H * SS, variant: 'level' });
-  getRenderer().toneMappingExposure = 0.9;
-  const out = renderToCanvas(scene, cam, W, H, { composer: bloomComposer(scene, cam, W, H, { strength: 0.55, radius: 0.4, threshold: 0.9 }) });
+  const W = 2176, H = 3200, k = 4 / 3;
+  const cam = stageCamera({ f: 1400 * k, cx: (540 + 168) * k, cy: (1170 + 30) * k, W, H, far: 300 });
+  const scene = buildLevel3Hall({ W: W * SS, H: H * SS });
+  getRenderer().toneMappingExposure = 1.0;
+  const out = renderToCanvas(scene, cam, W, H, { composer: bloomComposer(scene, cam, W, H, { strength: 0.6, radius: 0.45, threshold: 0.8 }) });
   getRenderer().toneMappingExposure = 1.05;
-  return out;
+  return flat.level3Finish(out);
 });
 
 // bg_home (1440x3120): its own scene (models/homescene.js) through a low camera looking
@@ -246,9 +251,11 @@ function renderProp(build, X, Z) {
   const g = glowLayer(scene, cam, W, H, { radius: 10, strength: 0.9 });
   return composite(base, g);
 }
-add('cover_crates_left', () => renderProp(coverCratesLeft, -0.62, 2.85));
-add('cover_crates_mid_1', () => renderProp(coverCrateMid, 0.02, 3.3));
-add('cover_forklift_right', () => renderProp(forklift, 0.80, 3.0));
+// Cover props, rendered from where the follow camera sees them at the start
+// (x relative to the camera: prop x - (playerStartX + cameraShoulder)); see Level3Props.
+add('cover_crates_left', () => renderProp(coverCratesLeft, -0.92, 2.75));
+add('cover_crates_mid_1', () => renderProp(coverCrateMid, 1.62, 2.85));
+add('cover_forklift_right', () => renderProp(forklift, 1.0, 3.3));
 add('cover_crates_mid_2', () => renderProp(sceneryCratesFar, -1.55, 8.3));
 add('cover_crates_mid_3', () => renderProp(sceneryCratesNear, 1.35, 3.95));
 

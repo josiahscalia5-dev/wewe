@@ -17,7 +17,7 @@ class PlaytestSimulationTest {
     /** A reasonable player: shoots with a little lead, hides when the robot turns hostile. */
     private fun playWithCover(seed: Long): Result {
         val g = Level3(seed = seed)
-        val metresPerFingerPx = g.tuning.playerZ / g.camera.focal / (1f - g.tuning.cameraFollow)
+        val metresPerFingerPx = g.tuning.dragMetresPerPx
         var caught = 0
         var t = 0f
         var moving = false

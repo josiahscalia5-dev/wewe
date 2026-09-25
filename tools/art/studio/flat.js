@@ -950,3 +950,34 @@ export function homeFinish(src) {
   x.restore();
   return c;
 }
+
+// ---------------------------------------------------------------- bg_warehouse finishing pass
+/** Level 3 grade: soft top vignette under the HUD, floating dust and warm/cool sparkles. */
+export function level3Finish(src) {
+  const W = src.width, H = src.height;
+  const c = canvas2d(W, H), x = c.getContext('2d');
+  x.drawImage(src, 0, 0);
+  const r = rng(2376);
+  let g = x.createLinearGradient(0, 0, 0, H * 0.2);
+  g.addColorStop(0, 'rgba(3,4,18,0.8)');
+  g.addColorStop(1, 'rgba(3,4,18,0)');
+  x.fillStyle = g;
+  x.fillRect(0, 0, W, H * 0.2);
+  g = x.createLinearGradient(0, H * 0.86, 0, H);
+  g.addColorStop(0, 'rgba(3,4,18,0)');
+  g.addColorStop(1, 'rgba(3,4,18,0.6)');
+  x.fillStyle = g;
+  x.fillRect(0, H * 0.86, W, H * 0.14);
+  x.save();
+  x.globalCompositeOperation = 'lighter';
+  const cols = ['255,190,110', '255,150,90', '120,170,255', '200,120,255'];
+  for (let i = 0; i < 260; i++) {
+    const px = r() * W, py = H * (0.12 + r() * 0.45);
+    const rr = 1.2 + r() * 3;
+    const col = cols[Math.floor(r() * cols.length)];
+    x.fillStyle = radial(x, px, py, rr * 2.6, [[0, `rgba(255,245,230,${0.4 + r() * 0.5})`], [0.35, `rgba(${col},0.35)`], [1, `rgba(${col},0)`]]);
+    x.fillRect(px - rr * 3, py - rr * 3, rr * 6, rr * 6);
+  }
+  x.restore();
+  return c;
+}

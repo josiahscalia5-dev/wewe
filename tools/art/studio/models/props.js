@@ -122,16 +122,19 @@ export function sceneryCratesNear() {
 /** Yellow warehouse forklift with a crate on its forks (reference 2376 right side). */
 export function forklift() {
   const g = group();
-  const yellow = plastic(0xe89a00, { rough: 0.36, clearcoat: 0.6, env: 0.45 });
-  const yellowDark = plastic(0x9a6c10, { rough: 0.45, env: 0.5 });
+  // Reference 2376: worn industrial yellow frame over a dark gunmetal body.
+  const yellow = plastic(0xc88810, { rough: 0.42, clearcoat: 0.4, env: 0.4 });
+  const yellowDark = plastic(0x7a5410, { rough: 0.5, env: 0.45 });
+  const bodyDark = plastic(0x2a2c36, { rough: 0.45, clearcoat: 0.4, env: 0.5 });
   const steel = metal(0x33363f, { rough: 0.45, env: 0.6 });
   const tyre = matte(0x111216, { rough: 0.85 });
   const hub = metal(0x9aa0aa, { rough: 0.3 });
   const orange = emissive(0xff8a2a, 1.2, 0xff6a10);
   // Chassis: the forks face the camera-left (toward the play area).
   const body = group();
-  body.add(mesh(rb(0.7, 0.42, 1.0, 0.08), yellow, { y: 0.36, z: -0.15 }));
-  body.add(mesh(rb(0.72, 0.18, 0.5, 0.06), yellowDark, { y: 0.62, z: -0.38 }));
+  body.add(mesh(rb(0.7, 0.42, 1.0, 0.08), bodyDark, { y: 0.36, z: -0.15 }));
+  body.add(mesh(rb(0.72, 0.06, 1.02, 0.02), yellow, { y: 0.56, z: -0.15 }));
+  body.add(mesh(rb(0.72, 0.18, 0.5, 0.06), bodyDark, { y: 0.62, z: -0.38 }));
   body.add(mesh(rb(0.36, 0.1, 0.32, 0.04), steel, { y: 0.62, z: -0.02 }));
   body.add(mesh(rb(0.32, 0.3, 0.06, 0.03), steel, { y: 0.82, z: -0.2 }));
   // Overhead guard.
@@ -152,13 +155,9 @@ export function forklift() {
   // Carriage + forks.
   mast.add(mesh(rb(0.6, 0.22, 0.05, 0.015), steel, { y: 0.34, z: 0.06 }));
   for (const x of [-0.16, 0.16]) mast.add(mesh(rb(0.07, 0.035, 0.6, 0.01), steel, { x, y: 0.26, z: 0.36 }));
-  // Crate on the forks.
-  const c = crate(0.56, 0.42, 0.5, { seed: 51, tint: 'light' });
-  c.position.set(0, 0.28, 0.36);
-  mast.add(c);
   body.add(mast);
   // Wheels.
-  for (const [x, z, r] of [[-0.37, 0.18, 0.17], [0.37, 0.18, 0.17], [-0.36, -0.52, 0.15], [0.36, -0.52, 0.15]]) {
+  for (const [x, z, r] of [[-0.37, 0.18, 0.13], [0.37, 0.18, 0.13], [-0.36, -0.52, 0.12], [0.36, -0.52, 0.12]]) {
     body.add(mesh(new THREE.CylinderGeometry(r, r, 0.14, 28), tyre, { x, y: r, z, rz: Math.PI / 2 }));
     body.add(mesh(new THREE.CylinderGeometry(r * 0.55, r * 0.55, 0.15, 20), hub, { x, y: r, z, rz: Math.PI / 2 }));
   }
