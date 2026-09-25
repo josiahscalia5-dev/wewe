@@ -14,13 +14,14 @@ class Level3Tuning(
 
     // Player (front strip)
     val playerZ: Float = 2.1f,
-    val playerMinX: Float = -0.62f,
-    val playerMaxX: Float = 0.62f,
-    val playerStartX: Float = -0.36f,
+    val playerMinX: Float = -0.64f,
+    val playerMaxX: Float = 0.64f,
+    /** Far left of the strip: the astronaut starts where reference/2376 shows him. */
+    val playerStartX: Float = -0.60f,
     val playerSpeed: Float = 1.05f,
     val cameraFollow: Float = 0.22f,
     /** Cover spots on the front strip: left crate stack, centre crate, right forklift. */
-    val coverX: FloatArray = floatArrayOf(-0.56f, -0.02f, 0.52f),
+    val coverX: FloatArray = floatArrayOf(-0.40f, 0.02f, 0.50f),
     val coverSnap: Float = 0.085f,
     /** How far past the cover spot a drag must reach before the astronaut leaves cover. */
     val coverExitDrag: Float = 0.16f,

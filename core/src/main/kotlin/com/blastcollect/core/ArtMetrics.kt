@@ -6,6 +6,14 @@ package com.blastcollect.core
  * replacement production art must keep them or update this file.
  */
 object ArtMetrics {
+    // bg_warehouse.png covers this stage rectangle (extra width for the parallax pan).
+    const val BG_STAGE_LEFT = -48f
+    const val BG_STAGE_TOP = -30f
+    const val BG_STAGE_W = 1176f
+    const val BG_STAGE_H = 2400f
+    const val BG_PX_W = 1568
+    const val BG_PX_H = 3200
+
     // Astronaut body frames (astro_*.png), seen from behind.
     const val ASTRO_W = 900
     const val ASTRO_H = 1100
@@ -35,6 +43,10 @@ object ArtMetrics {
     const val ROBOT_ANCHOR_X = 450f
     const val ROBOT_ANCHOR_Y = 1075f
     const val ROBOT_PX_PER_M = 450f
+
+    // Props (cover_*.png): bottom-centre anchor, same scale for every prop.
+    const val PROP_PX_PER_M = 420f
+    const val PROP_ANCHOR_BOTTOM_PAD = 12f
 
     // Drone frames (drone_*.png), body centre in the middle of the canvas.
     const val DRONE_W = 800

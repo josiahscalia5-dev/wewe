@@ -1,0 +1,13 @@
+{
+  "name": "blast-collect-art",
+  "private": true,
+  "description": "Renders the interim art layers in /art from 3D/vector sources (placeholders until production art is supplied).",
+  "type": "module",
+  "scripts": {
+    "render": "node render.mjs"
+  },
+  "dependencies": {
+    "playwright-core": "1.56",
+    "three": "^0.186.1"
+  }
+}

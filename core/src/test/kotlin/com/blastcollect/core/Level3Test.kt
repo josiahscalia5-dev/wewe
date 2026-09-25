@@ -221,12 +221,12 @@ class Level3Test {
     @Test
     fun coverHidesThePlayer() {
         val g = quietLevel()
-        // Drag right until the centre crate snaps the astronaut into cover.
+        // Drag right until the left crate stack snaps the astronaut into cover.
         g.beginMove(400f)
         g.updateMove(560f)
         g.run(1.5f)
         g.endMove()
-        assertEquals(1, g.player.cover)
+        assertEquals(0, g.player.cover)
         assertTrue(g.player.ducked)
         g.debugScan(g.player.x, 6f, 10f)
         g.run(2f)
@@ -239,12 +239,12 @@ class Level3Test {
         g.beginMove(400f)
         g.updateMove(560f)
         g.run(1.5f)
-        assertEquals(1, g.player.cover)
+        assertEquals(0, g.player.cover)
         g.updateMove(700f)
         g.run(1f)
         g.endMove()
         assertEquals(-1, g.player.cover)
-        assertTrue(g.player.x > g.tuning.coverX[1] + 0.1f)
+        assertTrue(g.player.x > g.tuning.coverX[0] + 0.1f)
         assertTrue(g.player.exposed)
     }
 

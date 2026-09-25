@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The crosshair "O" from the BLAST & COLLECT logo. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:strokeColor="#FF1FB8FF"
+        android:strokeWidth="6"
+        android:pathData="M54,31 a23,23 0 1,1 0,46 a23,23 0 1,1 0,-46z" />
+    <path
+        android:fillColor="#FF1FB8FF"
+        android:pathData="M51,20 h6 v17 h-6z M51,71 h6 v17 h-6z M20,51 h17 v6 h-17z M71,51 h17 v6 h-17z" />
+    <path
+        android:strokeColor="#FFFF8A1F"
+        android:strokeWidth="5"
+        android:pathData="M54,44 a10,10 0 1,1 0,20 a10,10 0 1,1 0,-20z" />
+    <path
+        android:fillColor="#FFFFD23F"
+        android:pathData="M54,50 a4,4 0 1,1 0,8 a4,4 0 1,1 0,-8z" />
+</vector>
