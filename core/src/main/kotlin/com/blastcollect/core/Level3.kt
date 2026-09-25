@@ -62,6 +62,11 @@ class Level3(
         private set
     var totalShots = 0
         private set
+    /** Running totals (the app drains [events] every frame; these are never cleared). */
+    var catches = 0
+        private set
+    var alerts = 0
+        private set
 
     // Input
     var aiming = false
@@ -73,7 +78,6 @@ class Level3(
     /** Current blaster arm angle in degrees (screen space, negative = up). */
     var armAngle = ArtMetrics.ARM_REST_DEG
         private set
-    private var sinceShot = 10f
     private var dragging = false
     private var dragFingerStart = 0f
     private var dragPlayerStart = 0f
@@ -309,7 +313,6 @@ class Level3(
         if (charge >= tuning.chargeSegments) waitForFullCharge = false
         if (!freezeWorld) muzzleFlash = max(0f, muzzleFlash - dt)
         fireCooldown -= dt
-        sinceShot += dt
 
         val wantsShot = pendingShot || (aiming && !waitForFullCharge)
         if (wantsShot && canShoot() && fireCooldown <= 0f && charge > 0 && overheat <= 0f) {
@@ -319,8 +322,8 @@ class Level3(
         // A tap fires once; drop it if it could not go off (stunned, overheated, too late).
         if (!aiming && pendingShot && (standHold <= 0f || !player.inCover)) pendingShot = false
 
-        // Arm follows the aim point; drifts back to rest shortly after the last shot.
-        val targetAngle = if (aiming || sinceShot < 0.5f) aimAngleDeg() else ArtMetrics.ARM_REST_DEG
+        // The blaster always points at the crosshair (which stays where the player last aimed).
+        val targetAngle = aimAngleDeg()
         val k = min(1f, dt * 18f)
         armAngle += (targetAngle - armAngle) * k
     }
@@ -337,7 +340,6 @@ class Level3(
         bolts += Bolt(m.x, m.y, aimX, aimY, tuning.boltTravel)
         muzzleFlash = tuning.muzzleFlashTime
         fireCooldown = tuning.fireInterval
-        sinceShot = 0f
         totalShots++
         events += GameEvent.Fire
     }
@@ -636,15 +638,23 @@ class Level3(
         val r = robot
         var x = r.x
         var z = r.z
-        val frontSweep = rng.nextFloat() < 0.2f
+        // Mostly the robot closes in on the player: it heads for the player's side of the
+        // room and steps toward the front strip, so it keeps coming at them.
+        val hunt = rng.nextFloat() < tuning.robotHuntBias
+        val frontSweep = !hunt && rng.nextFloat() < 0.2f
         for (attempt in 0 until 8) {
-            x = rand(tuning.robotMinX, tuning.robotMaxX)
-            z = if (frontSweep) {
-                tuning.playerZ + rand(1.7f, 2.3f)
+            if (hunt) {
+                x = (player.x + rand(-0.7f, 0.7f)).coerceIn(tuning.robotMinX, tuning.robotMaxX)
+                z = tuning.playerZ + rand(1.5f, 3.2f)
             } else {
-                rand(tuning.robotPatrolMinZ, tuning.robotPatrolMaxZ)
+                x = rand(tuning.robotMinX, tuning.robotMaxX)
+                z = if (frontSweep) {
+                    tuning.playerZ + rand(1.7f, 2.3f)
+                } else {
+                    rand(tuning.robotPatrolMinZ, tuning.robotPatrolMaxZ)
+                }
             }
-            if (hypot(x - r.x, z - r.z) > 1.3f) break
+            if (hypot(x - r.x, z - r.z) > 0.8f) break
         }
         r.waypointX = x
         r.waypointZ = z
@@ -707,6 +717,7 @@ class Level3(
             val alreadyHunting = r.state == RobotState.INVESTIGATE || r.state == RobotState.SEARCH
             enterRobot(RobotState.ALERT, if (alreadyHunting) tuning.alertTime * 0.45f else tuning.alertTime)
             r.suspicion = 0f
+            alerts++
             events += GameEvent.Alert
         }
     }
@@ -729,6 +740,7 @@ class Level3(
     private fun catchPlayer() {
         val r = robot
         enterRobot(RobotState.LUNGE, tuning.lungeTime)
+        catches++
         events += GameEvent.Caught
         val p = player
         p.stunTimer = tuning.stunTime
@@ -757,6 +769,15 @@ class Level3(
 
     fun debugSkipIntro() {
         if (phase == Phase.INTRO) setPhase(Phase.PLAYING)
+    }
+
+    /** Puts the player on the front strip at [x], standing and out of cover. */
+    fun debugPlacePlayer(x: Float) {
+        player.x = x.coerceIn(tuning.playerMinX, tuning.playerMaxX)
+        player.cover = -1
+        player.ignoreCover = -1
+        player.stand = 1f
+        camera.panX = player.x * tuning.cameraFollow
     }
 
     fun debugSetTimeLeft(seconds: Float) {
@@ -805,6 +826,13 @@ class Level3(
         robot.facing = facing
         robot.hasWaypoint = false
         enterRobot(RobotState.IDLE)
+    }
+
+    /** Ends any stun/knockback immediately (tests that script shots after a catch). */
+    fun debugCalmPlayer() {
+        player.stunTimer = 0f
+        player.knockTimer = 0f
+        player.knockVelocity = 0f
     }
 
     fun debugReleaseRobot() {

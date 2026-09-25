@@ -11,7 +11,8 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { getRenderer, SS } from './core.js';
-import { buildHero, buildCreature } from './models/hero.js';
+import { buildHomeHero } from './models/homehero.js';
+import { buildHomeScene, HOME_CAM } from './models/homescene.js';
 import { buildBlaster } from './models/astronaut.js';
 import * as flat from './flat.js';
 
@@ -200,15 +201,17 @@ add('bg_warehouse', () => {
   return out;
 });
 
-// bg_home (1440x3120): lower camera looking down the aisle, bluer light.
+// bg_home (1440x3120): its own scene (models/homescene.js) through a low camera looking
+// down the aisle, then a painted finishing pass: top/bottom vignette, deeper blues,
+// floating dust/bokeh like the reference.
 add('bg_home', () => {
   const W = 1440, H = 3120;
-  const cam = stageCamera({ f: 1750, cx: W / 2, cy: H * 0.5, W, H, camY: 1.45, far: 300 });
-  const scene = buildWarehouse({ W: W * SS, H: H * SS, variant: 'home' });
-  getRenderer().toneMappingExposure = 0.62;
-  const out = renderToCanvas(scene, cam, W, H, { composer: bloomComposer(scene, cam, W, H, { strength: 0.5, radius: 0.4, threshold: 0.9 }) });
+  const cam = stageCamera({ f: HOME_CAM.f, cx: W / 2, cy: H * HOME_CAM.horizon, W, H, camY: HOME_CAM.eye, far: 300 });
+  const scene = buildHomeScene({ W: W * SS, H: H * SS });
+  getRenderer().toneMappingExposure = 0.8;
+  const out = renderToCanvas(scene, cam, W, H, { composer: bloomComposer(scene, cam, W, H, { strength: 0.55, radius: 0.5, threshold: 0.85 }) });
   getRenderer().toneMappingExposure = 1.05;
-  return out;
+  return flat.homeFinish(out);
 });
 
 // ------------------------------------------------------------------ props (420 px/m, base centre 140 px above the bottom)
@@ -256,7 +259,8 @@ add('muzzle_flash', () => flat.muzzleFlash({ size: 256 }));
 add('glow_red', () => flat.glow('255,40,20'));
 add('glow_cyan', () => flat.glow('40,200,255'));
 for (let i = 0; i < 8; i++) add(`drone_explosion_${i + 1}`, () => flat.explosion(i));
-add('sparkle', () => flat.sparkle());
+add('sparkle', () => flat.sparkle('yellow'));
+for (const col of ['orange', 'cyan', 'green', 'pink']) add(`sparkle_${col}`, () => flat.sparkle(col));
 add('coin', () => flat.coin({ symbol: 'dollar' }));
 add('icon_coin_star', () => flat.coin({ symbol: 'star' }));
 add('gear', () => flat.gear());
@@ -297,34 +301,48 @@ add('icon_blaster', () => {
   return composite(base, glowLayer(scene, cam, W, H, { radius: 14, strength: 1.0 }));
 });
 
-// Home hero (1400x1324) and creatures (600x600).
+// Home hero (1600x1500): the chibi robot of reference 2371 in its running crouch. The
+// projected keypoints are logged (HERO_KEYS) so LayoutSpec.Home can be fitted to the
+// reference measurements (tools/preview/fit_home.py).
+function heroLights(scene) {
+  scene.add(new THREE.HemisphereLight(0x5a78ff, 0x1a0c3a, 1.1));
+  const key = new THREE.DirectionalLight(0xfff3e6, 1.6);
+  key.position.set(-4, 6, 4);
+  scene.add(key);
+  const rimL = new THREE.DirectionalLight(0xd24cff, 3.4);
+  rimL.position.set(-6, 3, -4);
+  scene.add(rimL);
+  const rimR = new THREE.DirectionalLight(0x38c8ff, 3.6);
+  rimR.position.set(6, 2, -3);
+  scene.add(rimR);
+  const under = new THREE.DirectionalLight(0x3a62ff, 1.2);
+  under.position.set(0, -4, 3);
+  scene.add(under);
+}
 add('hero_robot', () => {
-  const W = 1400, H = 1324;
-  const cam = stageCamera({ f: 2250, cx: 520, cy: 640, W, H, camY: 0.85 });
+  const W = 1600, H = 1500;
   const scene = new THREE.Scene();
-  characterLights(scene, { key: 2.4, rimL: 3.6, rimR: 3.6, fill: 0.8, keyDir: [-2, 3, 3] });
-  const h = buildHero();
-  h.position.set(0, 0, -4.2);
-  h.rotation.y = -0.15;
+  heroLights(scene);
+  const h = buildHomeHero(window.heroPose || {});
   scene.add(h);
+  h.updateMatrixWorld(true);
+  const cam = new THREE.PerspectiveCamera(17, W / H, 0.1, 50);
+  cam.position.set(0.05, 1.55, 7.4);
+  cam.lookAt(0.06, 0.6, 0);
+  cam.updateMatrixWorld(true);
+  const gun = h.userData.gun;
+  const muzzleW = gun.userData.muzzle.clone().applyMatrix4(gun.matrixWorld);
+  const warm = new THREE.PointLight(0xffb040, 5, 2.2, 1.4);
+  warm.position.copy(muzzleW).add(new THREE.Vector3(0.1, 0.05, 0.25));
+  scene.add(warm);
+  const proj = (v) => { const p = v.clone().project(cam); return [Math.round((p.x + 1) / 2 * W), Math.round((1 - p.y) / 2 * H)]; };
+  const keys = {};
+  h.traverse((o) => { if (o.name.startsWith('key:')) keys[o.name.slice(4)] = proj(new THREE.Vector3().setFromMatrixPosition(o.matrixWorld)); });
+  console.warn('HERO_KEYS ' + JSON.stringify(keys));
   const base = renderToCanvas(scene, cam, W, H);
-  return composite(base, glowLayer(scene, cam, W, H, { radius: 20, strength: 1.2 }), glowLayer(scene, cam, W, H, { radius: 6, strength: 0.8 }));
+  return composite(base, glowLayer(scene, cam, W, H, { radius: 22, strength: 1.3 }), glowLayer(scene, cam, W, H, { radius: 7, strength: 0.9 }));
 });
-const creatures = { blue: 0x2f8cff, yellow: 0xffc21a, green: 0x2ed84a, red: 0xff3040, purple: 0xb048ff };
-Object.entries(creatures).forEach(([name, color], i) => {
-  add(`creature_${name}`, () => {
-    const W = 600, H = 600;
-    const cam = stageCamera({ f: 1450, cx: 300, cy: 300, W, H, camY: 0 });
-    const scene = new THREE.Scene();
-    characterLights(scene, { key: 2.0, rimL: 2.4, rimR: 2.4, fill: 0.9, keyDir: [-2, 3, 3] });
-    const c = buildCreature(color, { mood: i });
-    c.position.set(0, 0, -3.2);
-    c.rotation.set(0.1, (i - 2) * 0.2, (i % 2 ? 1 : -1) * 0.12);
-    scene.add(c);
-    const base = renderToCanvas(scene, cam, W, H);
-    return composite(base, glowLayer(scene, cam, W, H, { radius: 26, strength: 0.7 }));
-  });
-});
+for (const name of ['blue', 'yellow', 'green', 'red', 'purple']) add(`creature_${name}`, () => flat.creature(name));
 
 // ------------------------------------------------------------------ registry API
 

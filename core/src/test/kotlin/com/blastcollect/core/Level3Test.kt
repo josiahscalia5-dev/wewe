@@ -360,4 +360,37 @@ class Level3Test {
         g.run(1f)
         assertEquals("pose is frozen", 28f, g.timeLeft, 0f)
     }
+
+    // ------------------------------------------------------------ robot hunts
+
+    @Test
+    fun robotActivelyClosesInOnThePlayer() {
+        for (seed in 1L..6L) {
+            val g = Level3(seed = seed)
+            g.debugSkipIntro()
+            g.debugClearDrones()
+            val dist = { kotlin.math.hypot(g.robot.x - g.player.x, g.robot.z - g.tuning.playerZ) }
+            val start = dist()
+            var closest = start
+            repeat((8f / dt).toInt()) {
+                g.step(dt)
+                closest = kotlin.math.min(closest, dist())
+            }
+            assertTrue("seed $seed: robot closes in (start $start, closest $closest, caught ${g.catches})", closest < start - 2f || g.catches > 0)
+        }
+    }
+
+    @Test
+    fun catchAndAlertCountersSurviveDrainedEvents() {
+        val g = quietLevel()
+        g.debugForceChase()
+        var steps = 0
+        while (!g.player.stunned && steps < 2000) {
+            g.step(dt)
+            g.events.clear() // the app drains events every frame
+            steps++
+        }
+        assertEquals(1, g.catches)
+        assertTrue(g.player.stunned)
+    }
 }

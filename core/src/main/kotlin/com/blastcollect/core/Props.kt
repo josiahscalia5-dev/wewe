@@ -10,8 +10,8 @@ object Level3Props {
      * past. Positions follow the composition of reference/2376.png.
      */
     val all = listOf(
-        Prop("cover_crates_mid_2", -1.55f, 8.3f),
-        Prop("cover_crates_mid_3", 1.35f, 3.95f),
+        // The two scenery crate piles (cover_crates_mid_2/3) were dropped: they cluttered
+        // the middle of the play area without being part of the gameplay.
         Prop("cover_forklift_right", 0.80f, 3.0f, cover = 2),
         Prop("cover_crates_left", -0.62f, 2.85f, cover = 0),
         Prop("cover_crates_mid_1", 0.02f, 3.3f, cover = 1),

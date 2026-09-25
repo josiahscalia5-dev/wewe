@@ -12,6 +12,9 @@ package com.blastcollect.game.ui
  */
 data class Spot(val cx: Float, val cy: Float, val w: Float, val h: Float)
 
+/** A sparkle on the Home screen: centre, size (fractions like [Spot]) and its art layer. */
+data class Sparkle(val cx: Float, val cy: Float, val size: Float, val layer: String)
+
 object LayoutSpec {
 
     object Level3 {
@@ -59,46 +62,51 @@ object LayoutSpec {
         val coinIcon = Spot(cx = 0.5237f, cy = 0.0513f, w = 0.0785f, h = 0.0785f)
         val plusButton = Spot(cx = 0.774f, cy = 0.0513f, w = 0.076f, h = 0.076f)
         val settingsButton = Spot(cx = 0.9078f, cy = 0.0510f, w = 0.1046f, h = 0.093f)
-        val logo = Spot(cx = 0.546f, cy = 0.1964f, w = 0.98f, h = 0.519f)
+        /** logo_title canvas = reference screen x 0.05..0.98, y 0.10..0.33 (see flat.js LOGO). */
+        val logo = Spot(cx = 0.515f, cy = 0.1964f, w = 0.93f, h = 0.5068f)
 
-        val heroRobot = Spot(cx = 0.47f, cy = 0.51f, w = 1.08f, h = 1.0214f)
-        /** Blaster muzzle inside the hero_robot canvas (fractions), where the flash is centred. */
-        const val heroMuzzleU = 0.8707f
-        const val heroMuzzleV = 0.5174f
+        /** hero_robot canvas (1600x1500), fitted to 12 keypoints measured on the reference. */
+        val heroRobot = Spot(cx = 0.4906f, cy = 0.5296f, w = 1.0539f, h = 0.9880f)
+        /** Cannon muzzle inside the hero_robot canvas (fractions), where the flash is centred. */
+        const val heroMuzzleU = 0.7825f
+        const val heroMuzzleV = 0.6007f
         /** hero_muzzle_flash size (fraction of width); its core sits 35% from its left edge. */
         const val heroMuzzleSize = 0.36f
 
-        val creatureBlue = Spot(cx = 0.165f, cy = 0.360f, w = 0.338f, h = 0.338f)
-        val creatureYellow = Spot(cx = 0.655f, cy = 0.323f, w = 0.230f, h = 0.230f)
-        val creatureGreen = Spot(cx = 0.845f, cy = 0.370f, w = 0.270f, h = 0.270f)
-        val creatureRed = Spot(cx = 0.805f, cy = 0.466f, w = 0.284f, h = 0.284f)
-        val creaturePurple = Spot(cx = 0.098f, cy = 0.518f, w = 0.176f, h = 0.176f)
-        val creatureBlueSmall = Spot(cx = 0.872f, cy = 0.654f, w = 0.128f, h = 0.128f)
+        // Creature canvases: the painted silhouette (body + nubs) is ~70% of the canvas.
+        val creatureBlue = Spot(cx = 0.141f, cy = 0.3676f, w = 0.334f, h = 0.334f)
+        val creatureYellow = Spot(cx = 0.650f, cy = 0.3298f, w = 0.210f, h = 0.210f)
+        val creatureGreen = Spot(cx = 0.840f, cy = 0.3687f, w = 0.274f, h = 0.274f)
+        val creatureRed = Spot(cx = 0.808f, cy = 0.4643f, w = 0.268f, h = 0.268f)
+        val creaturePurple = Spot(cx = 0.100f, cy = 0.5273f, w = 0.168f, h = 0.168f)
+        val creatureBlueSmall = Spot(cx = 0.870f, cy = 0.6513f, w = 0.131f, h = 0.131f)
 
-        /** Sparkles: cx, cy, size (fraction of width). */
+        /** Coloured 4-point sparkles measured on the reference: cx, cy, size, layer. */
         val sparkles = listOf(
-            floatArrayOf(0.12f, 0.070f, 0.060f),
-            floatArrayOf(0.35f, 0.075f, 0.040f),
-            floatArrayOf(0.10f, 0.165f, 0.050f),
-            floatArrayOf(0.13f, 0.205f, 0.035f),
-            floatArrayOf(0.92f, 0.175f, 0.075f),
-            floatArrayOf(0.51f, 0.315f, 0.050f),
-            floatArrayOf(0.33f, 0.345f, 0.065f),
-            floatArrayOf(0.45f, 0.355f, 0.030f),
-            floatArrayOf(0.60f, 0.40f, 0.030f),
-            floatArrayOf(0.71f, 0.425f, 0.045f),
-            floatArrayOf(0.16f, 0.455f, 0.055f),
-            floatArrayOf(0.94f, 0.43f, 0.040f),
-            floatArrayOf(0.18f, 0.575f, 0.050f),
-            floatArrayOf(0.72f, 0.535f, 0.035f),
-            floatArrayOf(0.90f, 0.33f, 0.035f),
+            Sparkle(0.125f, 0.0626f, 0.065f, "sparkle_orange"),
+            Sparkle(0.349f, 0.0804f, 0.065f, "sparkle_cyan"),
+            Sparkle(0.100f, 0.1429f, 0.056f, "sparkle"),
+            Sparkle(0.125f, 0.1712f, 0.041f, "sparkle_orange"),
+            Sparkle(0.909f, 0.1366f, 0.130f, "sparkle"),
+            Sparkle(0.510f, 0.3141f, 0.056f, "sparkle"),
+            Sparkle(0.336f, 0.3393f, 0.106f, "sparkle"),
+            Sparkle(0.455f, 0.3435f, 0.041f, "sparkle_cyan"),
+            Sparkle(0.538f, 0.3550f, 0.032f, "sparkle_cyan"),
+            Sparkle(0.897f, 0.3057f, 0.065f, "sparkle_green"),
+            Sparkle(0.716f, 0.3950f, 0.048f, "sparkle"),
+            Sparkle(0.720f, 0.4128f, 0.041f, "sparkle"),
+            Sparkle(0.162f, 0.4527f, 0.072f, "sparkle_green"),
+            Sparkle(0.946f, 0.4538f, 0.056f, "sparkle_cyan"),
+            Sparkle(0.180f, 0.5620f, 0.065f, "sparkle"),
+            Sparkle(0.910f, 0.5221f, 0.032f, "sparkle_pink"),
+            Sparkle(0.056f, 0.4275f, 0.032f, "sparkle_orange"),
         )
 
         val taglineCy = floatArrayOf(0.6586f, 0.6933f, 0.7269f)
         const val taglineSize = 0.071f
 
         val playButton = Spot(cx = 0.4994f, cy = 0.796f, w = 0.732f, h = 0.172f)
-        const val playTextSize = 0.108f
+        const val playTextSize = 0.115f
 
         val navBar = Spot(cx = 0.50f, cy = 0.9264f, w = 0.96f, h = 0.198f)
         const val navIconSize = 0.105f // of screen width

@@ -18,7 +18,10 @@ object Fonts {
         Font(R.font.barlow_condensed_extrabold, FontWeight.ExtraBold),
     )
 
-    /** Rounded heavy text: "PLAY NOW", nav labels, wallet. */
+    /** Heavy rounded display face of the reference's logo and "PLAY NOW" (Lilita One, OFL). */
+    val display = FontFamily(Font(R.font.lilita_one, FontWeight.Normal))
+
+    /** Rounded text: nav labels, wallet. */
     @OptIn(ExperimentalTextApi::class)
     val rounded = FontFamily(
         Font(

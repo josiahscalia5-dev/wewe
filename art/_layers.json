@@ -186,42 +186,42 @@
  "creature_blue": {
   "canvasH": 600,
   "canvasW": 600,
-  "h": 571,
-  "w": 600,
-  "x": 0,
-  "y": 0
+  "h": 547,
+  "w": 574,
+  "x": 3,
+  "y": 32
  },
  "creature_green": {
   "canvasH": 600,
   "canvasW": 600,
-  "h": 569,
-  "w": 600,
-  "x": 0,
-  "y": 0
+  "h": 547,
+  "w": 574,
+  "x": 12,
+  "y": 36
  },
  "creature_purple": {
   "canvasH": 600,
   "canvasW": 600,
-  "h": 570,
-  "w": 600,
-  "x": 0,
-  "y": 0
+  "h": 544,
+  "w": 559,
+  "x": 18,
+  "y": 36
  },
  "creature_red": {
   "canvasH": 600,
   "canvasW": 600,
-  "h": 571,
-  "w": 599,
-  "x": 0,
-  "y": 0
+  "h": 547,
+  "w": 562,
+  "x": 15,
+  "y": 30
  },
  "creature_yellow": {
   "canvasH": 600,
   "canvasW": 600,
-  "h": 570,
-  "w": 600,
-  "x": 0,
-  "y": 0
+  "h": 544,
+  "w": 553,
+  "x": 24,
+  "y": 24
  },
  "drone_body": {
   "canvasH": 800,
@@ -362,18 +362,18 @@
  "hero_muzzle_flash": {
   "canvasH": 768,
   "canvasW": 768,
-  "h": 764,
-  "w": 743,
+  "h": 762,
+  "w": 755,
   "x": 0,
-  "y": 2
+  "y": 3
  },
  "hero_robot": {
-  "canvasH": 1324,
-  "canvasW": 1400,
-  "h": 1051,
-  "w": 1059,
-  "x": 194,
-  "y": 82
+  "canvasH": 1500,
+  "canvasW": 1600,
+  "h": 1111,
+  "w": 1082,
+  "x": 232,
+  "y": 168
  },
  "icon_blaster": {
   "canvasH": 400,
@@ -424,12 +424,12 @@
   "y": 1
  },
  "logo_title": {
-  "canvasH": 900,
-  "canvasW": 1700,
-  "h": 831,
-  "w": 1447,
-  "x": 150,
-  "y": 39
+  "canvasH": 1090,
+  "canvasW": 2000,
+  "h": 1005,
+  "w": 1851,
+  "x": 41,
+  "y": 85
  },
  "muzzle_flash": {
   "canvasH": 256,
@@ -653,6 +653,38 @@
   "h": 256,
   "w": 256,
   "x": 0,
+  "y": 0
+ },
+ "sparkle_cyan": {
+  "canvasH": 256,
+  "canvasW": 256,
+  "h": 256,
+  "w": 222,
+  "x": 17,
+  "y": 0
+ },
+ "sparkle_green": {
+  "canvasH": 256,
+  "canvasW": 256,
+  "h": 256,
+  "w": 222,
+  "x": 17,
+  "y": 0
+ },
+ "sparkle_orange": {
+  "canvasH": 256,
+  "canvasW": 256,
+  "h": 256,
+  "w": 222,
+  "x": 17,
+  "y": 0
+ },
+ "sparkle_pink": {
+  "canvasH": 256,
+  "canvasW": 256,
+  "h": 256,
+  "w": 222,
+  "x": 17,
   "y": 0
  }
 }

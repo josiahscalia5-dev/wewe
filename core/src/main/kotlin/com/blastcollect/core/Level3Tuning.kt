@@ -62,16 +62,18 @@ class Level3Tuning(
     val robotMaxX: Float = 1.7f,
     val robotPatrolMinZ: Float = 4.6f,
     val robotPatrolMaxZ: Float = 7.4f,
-    val robotPatrolSpeed: Float = 0.5f,
-    /** Chase speed as a fraction of the player's speed (brief: ~65%, escapable). */
-    val robotChaseFactor: Float = 0.65f,
+    val robotPatrolSpeed: Float = 0.8f,
+    /** Chase speed as a fraction of the player's speed (slower than the player: escapable). */
+    val robotChaseFactor: Float = 0.75f,
     val robotRetreatSpeed: Float = 0.8f,
-    val robotRetargetMin: Float = 3f,
-    val robotRetargetMax: Float = 6f,
-    val robotScanChance: Float = 0.5f,
+    val robotRetargetMin: Float = 2f,
+    val robotRetargetMax: Float = 3.5f,
+    val robotScanChance: Float = 0.3f,
+    /** Share of patrol waypoints that close in on the player (the robot hunts, it does not wander). */
+    val robotHuntBias: Float = 0.75f,
     val robotScanMin: Float = 1.2f,
     val robotScanMax: Float = 2.0f,
-    val robotConeHalfAngleDeg: Float = 55f,
+    val robotConeHalfAngleDeg: Float = 70f,
     val robotSightRange: Float = 9.5f,
     /** Continuous exposure inside the cone needed before the robot reacts. */
     val detectTime: Float = 0.6f,

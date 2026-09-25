@@ -14,13 +14,12 @@ import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiSelector
 import androidx.test.uiautomator.Until
 import com.blastcollect.core.Facing
-import com.blastcollect.core.GameEvent
 import com.blastcollect.core.Level3
 import com.blastcollect.core.Phase
 import com.blastcollect.core.RobotState
 import com.blastcollect.core.Stage
+import com.blastcollect.game.ui.LayoutSpec
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -136,6 +135,64 @@ class Phase1FlowTest {
         press(x, y + 80f * density, holdMs = holdMs)
     }
 
+    /**
+     * Plays like a person for [seconds] with the live robot and real moving drones:
+     * tracks the nearest drone with the aim finger (auto-fire while held), then sidesteps
+     * away from the robot. Screenshots are taken at [shotsAt] seconds into the session.
+     */
+    private fun autoplay(seconds: Float, vw: Int, vh: Int, shotsAt: List<Pair<Float, String>>) {
+        val start = SystemClock.uptimeMillis()
+        val pending = shotsAt.toMutableList()
+        val aimLimitY = vh * LayoutSpec.Level3.moveZoneTop - 12f
+        fun elapsed() = (SystemClock.uptimeMillis() - start) / 1000f
+        fun maybeShoot() {
+            while (pending.isNotEmpty() && elapsed() >= pending.first().first) shot(pending.removeAt(0).second)
+        }
+        fun targetPoint(): Pair<Float, Float>? = onMain {
+            val l = level()
+            val d = l.drones.filter { it.hittable }
+                .map { it to l.droneScreen(it) }
+                .filter { (_, p) -> p.x in 60f..(Stage.W - 60f) && p.y in 250f..1500f }
+                .minByOrNull { (_, p) -> kotlin.math.abs(p.x - Stage.W * 0.5f) }
+            d?.let { (_, p) -> screenPoint(p.x, p.y) }
+        }
+        while (elapsed() < seconds) {
+            maybeShoot()
+            if (onMain { level().player.stunned || level().finished }) {
+                sleep(100)
+                continue
+            }
+            val t = targetPoint()
+            if (t != null) {
+                // Aim finger: down on the drone (crosshair sits 80 dp above the finger), follow it.
+                val down = SystemClock.uptimeMillis()
+                fun fy(y: Float) = (y + 80f * density).coerceAtMost(aimLimitY)
+                inject(MotionEvent.obtain(down, down, MotionEvent.ACTION_DOWN, t.first, fy(t.second), 0))
+                var last: Pair<Float, Float> = t
+                repeat(22) {
+                    sleep(32)
+                    val p = targetPoint() ?: last
+                    last = p
+                    inject(MotionEvent.obtain(down, SystemClock.uptimeMillis(), MotionEvent.ACTION_MOVE, p.first, fy(p.second), 0))
+                }
+                inject(MotionEvent.obtain(down, SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, last.first, fy(last.second), 0))
+            } else {
+                sleep(150)
+            }
+            maybeShoot()
+            // Reposition: step away from the robot (turn around at the edges of the strip).
+            val dir = onMain {
+                val l = level()
+                var d = if (l.robot.x >= l.player.x) -1f else 1f
+                if (l.player.x < l.tuning.playerMinX + 0.15f) d = 1f
+                if (l.player.x > l.tuning.playerMaxX - 0.15f) d = -1f
+                d
+            }
+            press(vw * 0.5f, vh * 0.84f, vw * (0.5f + dir * 0.16f), vh * 0.84f, moveMs = 280, holdMs = 120)
+        }
+        maybeShoot()
+    }
+
     private fun clickDesc(desc: String, timeout: Long = 8000) {
         val o = device.wait(Until.findObject(By.desc(desc)), timeout)
         assertNotNull("button '$desc' visible", o)
@@ -149,12 +206,13 @@ class Phase1FlowTest {
         ctx.startActivity(intent)
     }
 
+    /** No live drones, robot parked mid-right, player able to shoot. */
     private fun quietArena() = onMain {
         val l = ActiveGame.level!!
         l.debugSkipIntro()
         l.debugClearDrones()
         l.debugParkRobot(1.8f, 7.2f, Facing.LEFT)
-        l.events.clear()
+        l.debugCalmPlayer()
     }
 
     // ------------------------------------------------------------------ the flow
@@ -202,6 +260,46 @@ class Phase1FlowTest {
         sleep(1200)
         shot("05_level3_playing")
         val (vw, vh) = viewSize()
+
+        // Real play for ~14 s: live robot hunting the player, drones flying their routes.
+        val kills0 = onMain { level().kills }
+        val shots0 = onMain { level().totalShots }
+        val robotStart = onMain { level().robot.x to level().robot.z }
+        var robotTravel = 0f
+        var lastRobot = robotStart
+        val sampler = Thread {
+            while (!Thread.currentThread().isInterrupted) {
+                try {
+                    Thread.sleep(100)
+                } catch (e: InterruptedException) {
+                    break
+                }
+                val r = onMain { level().robot.x to level().robot.z }
+                robotTravel += kotlin.math.hypot(r.first - lastRobot.first, r.second - lastRobot.second)
+                lastRobot = r
+            }
+        }
+        sampler.start()
+        autoplay(14f, vw, vh, listOf(2.5f to "06_play_aiming", 6f to "06b_play_robot_hunting", 10f to "06c_play_moving", 13.5f to "06d_play_progress"))
+        sampler.interrupt()
+        sampler.join(1000)
+        val playKills = onMain { level().kills } - kills0
+        val playShots = onMain { level().totalShots } - shots0
+        note("autoplay: kills=$playKills shots=$playShots catches=${onMain { level().catches }} alerts=${onMain { level().alerts }} " +
+            "robotTravel=${"%.2f".format(robotTravel)}m timeLeft=${onMain { level().timeLeft }}")
+        assertTrue("autoplay fired shots", playShots > 0)
+        assertTrue("autoplay destroyed moving drones", playKills > 0)
+        assertTrue("robot moved around hunting the player", robotTravel > 1.5f)
+
+        // Deterministic checks from here on: the robot is parked while the scripted
+        // movement/shooting steps run (its chase and catch are tested below).
+        onMain {
+            val l = level()
+            l.debugParkRobot(1.8f, 7.2f, Facing.LEFT)
+            l.debugCalmPlayer()
+            l.debugPlacePlayer(l.tuning.playerStartX)
+        }
+        sleep(300)
 
         // Move: drag in the lower zone.
         val x0 = onMain { level().player.x }
@@ -276,8 +374,8 @@ class Phase1FlowTest {
                     it.stand = 1f
                 }
             }
-            level().events.clear()
         }
+        val catchesBefore = onMain { level().catches }
         val before = onMain { level().timeLeft }
         val t0 = SystemClock.uptimeMillis()
         onMain { level().debugForceChase() }
@@ -288,7 +386,7 @@ class Phase1FlowTest {
         val after = onMain { level().timeLeft }
         note("catch: time $before -> $after after ${elapsed}s")
         assertTrue("catch costs 5 s", after <= before - 5f + 0.3f)
-        assertTrue(onMain { level().events.contains(GameEvent.Caught) })
+        assertEquals("caught once", catchesBefore + 1, onMain { level().catches })
 
         // Hide: wait out the stun, run into the nearest cover spot, robot must not see us.
         waitFor("stun ends", 3000) { !level().player.stunned }
@@ -305,14 +403,14 @@ class Phase1FlowTest {
         val (sx1, _) = screenPoint(targetStageX, 0f)
         press(sx0, vh * 0.82f, sx1, vh * 0.82f, moveMs = 500, holdMs = 900)
         waitFor("astronaut ducks behind cover", 3000) { level().player.ducked }
+        val alertsBefore = onMain { level().alerts }
         onMain {
             val l = level()
-            l.events.clear()
             l.debugScan(l.player.x, 5.2f, 4f)
         }
         sleep(1500)
         shot("09_hiding")
-        assertFalse("robot does not spot a hidden player", onMain { level().events.contains(GameEvent.Alert) })
+        assertEquals("robot does not spot a hidden player", alertsBefore, onMain { level().alerts })
         assertEquals(RobotState.SCAN, onMain { level().robot.state })
 
         // Pause / resume.

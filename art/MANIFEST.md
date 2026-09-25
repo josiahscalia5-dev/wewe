@@ -16,16 +16,17 @@ Regenerate the placeholders: `cd tools/art && npm install && node render.mjs && 
 | Layer | Status | Source | Canvas (px) | Notes |
 |---|---|---|---|---|
 | **Home** | | | | |
-| `bg_home` | interim placeholder | 3D | 1440×3120 |  |
-| `logo_title` | interim placeholder | 2D canvas (Lilita One) | 1700×900 |  |
-| `hero_robot` | interim placeholder | 3D render | 1400×1324 |  |
+| `bg_home` | interim placeholder | 3D (models/homescene.js) + painted finishing pass | 1440×3120 | dark blue aisle, crates in the bottom corners |
+| `logo_title` | interim placeholder | 2D canvas (Lilita One), letter boxes measured on 2371 | 2000×1090 | canvas = screen x 0.05–0.98, y 0.10–0.33 |
+| `hero_robot` | interim placeholder | 3D render (models/homehero.js), fitted to 12 keypoints of 2371 | 1600×1500 |  |
 | `hero_muzzle_flash` | interim placeholder | 2D canvas | 768×768 |  |
-| `creature_blue` | interim placeholder | 3D render | 600×600 |  |
-| `creature_yellow` | interim placeholder | 3D render | 600×600 |  |
-| `creature_green` | interim placeholder | 3D render | 600×600 |  |
-| `creature_red` | interim placeholder | 3D render | 600×600 |  |
-| `creature_purple` | interim placeholder | 3D render | 600×600 |  |
-| `sparkle` | interim placeholder | 2D canvas | 256×256 |  |
+| `creature_blue` | interim placeholder | 2D canvas painting | 600×600 |  |
+| `creature_yellow` | interim placeholder | 2D canvas painting | 600×600 |  |
+| `creature_green` | interim placeholder | 2D canvas painting | 600×600 |  |
+| `creature_red` | interim placeholder | 2D canvas painting | 600×600 |  |
+| `creature_purple` | interim placeholder | 2D canvas painting | 600×600 |  |
+| `sparkle` | interim placeholder | 2D canvas | 256×256 | yellow |
+| `sparkle_orange`, `sparkle_cyan`, `sparkle_green`, `sparkle_pink` | interim placeholder | 2D canvas | 256×256 | added: coloured sparkles of 2371 |
 | `coin` | interim placeholder | 2D canvas | 512×512 |  |
 | `gear` | interim placeholder | 2D canvas | 512×512 |  |
 | `plus` | interim placeholder | 2D canvas | 512×512 |  |

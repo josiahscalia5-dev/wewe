@@ -88,17 +88,18 @@ fun HomeScreen(
 
             // Sparkles twinkle behind everything else.
             H.sparkles.forEachIndexed { i, s ->
-                val sp = Spot(s[0], s[1], s[2], s[2])
+                val sp = Spot(s.cx, s.cy, s.size, s.size)
                 Box(
                     spot(sp).graphicsLayer {
                         val t = time.value * (1.1f + (i % 4) * 0.23f) + i * 1.37f
-                        val k = 0.55f + 0.45f * ((sin(t * 2.2f) + 1f) / 2f)
+                        // Twinkle around the reference size; stars stay upright like 2371.
+                        val k = 0.8f + 0.25f * ((sin(t * 2.2f) + 1f) / 2f)
                         scaleX = k
                         scaleY = k
-                        alpha = 0.35f + 0.65f * k
-                        rotationZ = (i * 17f) % 45f
+                        alpha = 0.6f + 0.4f * ((sin(t * 2.2f) + 1f) / 2f)
+                        rotationZ = sin(t * 0.7f) * 6f
                     },
-                ) { ArtImage(art, "sparkle", Modifier.fillMaxSize()) }
+                ) { ArtImage(art, s.layer, Modifier.fillMaxSize()) }
             }
 
             Creature(art, "creature_blue", H.creatureBlue, time, 0.0f, 2.6f)
@@ -252,11 +253,23 @@ private fun PlayNowButton(textSize: TextUnit, onPlay: () -> Unit) {
             )
             drawRoundRect(Color(0xFF063008), cornerRadius = r, style = Stroke(h * 0.035f))
         }
+        // Reference 2371: white-to-pale-steel letters, dark green outline and a deeper
+        // green 3D drop underneath.
+        val ow = with(LocalDensity.current) { textSize.toPx() * 0.15f }
+        val drop = with(LocalDensity.current) { (textSize.toPx() * 0.07f).toDp() }
         OutlinedText(
-            "PLAY NOW", textSize, Fonts.rounded, FontWeight.Bold,
-            brush = Brush.verticalGradient(listOf(Color.White, Color(0xFFE6F2E6))),
-            outline = Color(0xFF0B3F10),
-            outlineWidth = with(LocalDensity.current) { textSize.toPx() * 0.16f },
+            "PLAY NOW", textSize, Fonts.display, FontWeight.Normal,
+            modifier = Modifier.offset(y = drop),
+            color = Color(0xFF06300B),
+            outline = Color(0xFF06300B),
+            outlineWidth = ow,
+        )
+        OutlinedText(
+            "PLAY NOW", textSize, Fonts.display, FontWeight.Normal,
+            brush = Brush.verticalGradient(listOf(Color.White, Color.White, Color(0xFFCFDCEA))),
+            outline = Color(0xFF0A4212),
+            outlineWidth = ow,
+            shadow = false,
         )
     }
 }

@@ -10,7 +10,7 @@ object Layers {
     val home = listOf(
         "bg_home", "logo_title", "hero_robot", "hero_muzzle_flash",
         "creature_blue", "creature_yellow", "creature_green", "creature_red", "creature_purple",
-        "sparkle", "coin", "gear", "plus", "nav_home", "nav_missions", "nav_shop", "nav_profile",
+        "sparkle", "sparkle_orange", "sparkle_cyan", "sparkle_green", "sparkle_pink", "coin", "gear", "plus", "nav_home", "nav_missions", "nav_shop", "nav_profile",
     )
 
     val hudIcons = listOf("icon_drone", "icon_stopwatch", "icon_blaster", "icon_coin_star")
