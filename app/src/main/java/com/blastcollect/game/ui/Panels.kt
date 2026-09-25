@@ -52,26 +52,28 @@ private fun HomePanel(
         val density = LocalDensity.current
         val wPx = constraints.maxWidth.toFloat()
         val ts: (Float) -> TextUnit = { f -> with(density) { (wPx * f).toSp() } }
-        val navTop = maxHeight * (LayoutSpec.Home.navBar.cy) - maxWidth * (LayoutSpec.Home.navBar.h / 2f)
+        val sw = maxWidth
+        val sh = maxHeight
+        val navTop = sh * (LayoutSpec.Home.navBar.cy) - sw * (LayoutSpec.Home.navBar.h / 2f)
         Box(
             Modifier.fillMaxWidth()
-                .size(maxWidth, if (blockNav) maxHeight else navTop)
+                .size(sw, if (blockNav) sh else navTop)
                 .background(Color(0xB3030612))
                 .clickable(remember { MutableInteractionSource() }, indication = null, onClick = onDismiss)
                 .testTag(tag),
             contentAlignment = Alignment.Center,
         ) {
             Box(
-                Modifier.width(maxWidth * 0.84f)
+                Modifier.width(sw * 0.84f)
                     .clickable(remember { MutableInteractionSource() }, indication = null) {},
                 contentAlignment = Alignment.Center,
             ) {
                 Canvas(Modifier.matchParentSize()) { hudPanel(radiusFraction = 0.08f) }
                 Column(
-                    Modifier.fillMaxWidth().padding(vertical = maxWidth * 0.06f, horizontal = maxWidth * 0.06f),
+                    Modifier.fillMaxWidth().padding(vertical = sw * 0.06f, horizontal = sw * 0.06f),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(maxWidth * 0.04f),
-                ) { content(maxWidth, ts) }
+                    verticalArrangement = Arrangement.spacedBy(sw * 0.04f),
+                ) { content(sw, ts) }
             }
         }
     }
@@ -97,7 +99,7 @@ fun SettingsPanel(
 }
 
 @Composable
-private fun ToggleRow(label: String, on: Boolean, w: Dp, size: TextUnit, tag: String, onChange: (Boolean) -> Unit) {
+private fun ToggleRow(label: String, on: Boolean, w: Dp, textSize: TextUnit, tag: String, onChange: (Boolean) -> Unit) {
     Row(
         Modifier.fillMaxWidth()
             .clip(RoundedCornerShape(30))
@@ -112,7 +114,7 @@ private fun ToggleRow(label: String, on: Boolean, w: Dp, size: TextUnit, tag: St
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        OutlinedText(label, size, Fonts.rounded, FontWeight.SemiBold, align = TextAlign.Start)
+        OutlinedText(label, textSize, Fonts.rounded, FontWeight.SemiBold, align = TextAlign.Start)
         Canvas(Modifier.size(w * 0.2f, w * 0.1f)) {
             val r = CornerRadius(size.height / 2f)
             val track = if (on) Brush.horizontalGradient(listOf(Palette.segmentLitDeep, Palette.segmentLit)) else Brush.horizontalGradient(listOf(Palette.segmentOff, Palette.segmentOff))

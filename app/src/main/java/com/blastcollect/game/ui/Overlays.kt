@@ -126,16 +126,17 @@ private fun OverlayPanel(title: String, titleColor: Color, tag: String, content:
         val density = LocalDensity.current
         val wPx = constraints.maxWidth.toFloat()
         val ts: (Float) -> TextUnit = { f -> with(density) { (wPx * f).toSp() } }
-        val panelW = maxWidth * 0.84f
+        val sw = maxWidth
+        val panelW = sw * 0.84f
         Box(Modifier.width(panelW), contentAlignment = Alignment.Center) {
             Canvas(Modifier.matchParentSize()) { hudPanel(radiusFraction = 0.08f) }
             Column(
-                Modifier.fillMaxWidth().padding(vertical = maxWidth * 0.07f, horizontal = maxWidth * 0.05f),
+                Modifier.fillMaxWidth().padding(vertical = sw * 0.07f, horizontal = sw * 0.05f),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(maxWidth * 0.035f),
+                verticalArrangement = Arrangement.spacedBy(sw * 0.035f),
             ) {
                 OutlinedText(title, ts(0.11f), Fonts.hud, FontWeight.ExtraBold, color = titleColor, outlineWidth = wPx * 0.006f)
-                content(maxWidth, ts)
+                content(sw, ts)
             }
         }
     }
@@ -186,10 +187,11 @@ fun OpeningBanner() {
         val density = LocalDensity.current
         val wPx = constraints.maxWidth.toFloat()
         fun ts(f: Float) = with(density) { (wPx * f).toSp() }
+        val sw = maxWidth
         Box(
             Modifier.align(Alignment.TopCenter)
                 .padding(top = maxHeight * 0.30f)
-                .width(maxWidth * 0.9f)
+                .width(sw * 0.9f)
                 .scale(k),
             contentAlignment = Alignment.Center,
         ) {
@@ -200,12 +202,12 @@ fun OpeningBanner() {
                 )
             }
             Column(
-                Modifier.padding(vertical = maxWidth * 0.045f, horizontal = maxWidth * 0.04f),
+                Modifier.padding(vertical = sw * 0.045f, horizontal = sw * 0.04f),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 OutlinedText("SHOOT THE RED DRONES —", ts(0.068f), Fonts.hud, FontWeight.ExtraBold, outlineWidth = wPx * 0.005f)
                 OutlinedText("WATCH OUT FOR THE ROBOT!", ts(0.075f), Fonts.hud, FontWeight.ExtraBold, color = Color(0xFFFF5A4A), outlineWidth = wPx * 0.005f)
-                Spacer(Modifier.height(maxWidth * 0.012f))
+                Spacer(Modifier.height(sw * 0.012f))
                 OutlinedText("Hide behind cover.", ts(0.05f), Fonts.rounded, FontWeight.SemiBold, color = Color(0xFFBFE9FF))
             }
         }

@@ -53,6 +53,7 @@ fun Level3Hud(hud: HudState, art: ArtLibrary, onPause: () -> Unit) {
         val L = LayoutSpec.Level3
         val density = LocalDensity.current
         val wPx = constraints.maxWidth.toFloat()
+        val sw = maxWidth
         fun ts(f: Float): TextUnit = with(density) { (wPx * f).toSp() }
 
         // Pause button.
@@ -104,8 +105,8 @@ fun Level3Hud(hud: HudState, art: ArtLibrary, onPause: () -> Unit) {
             }
             ArtImage(
                 art, "icon_stopwatch",
-                Modifier.offset(x = maxWidth * (L.timerPill.w * 0.05f), y = maxWidth * (L.timerPill.h * 0.14f))
-                    .size(maxWidth * (L.timerPill.h * 0.72f)),
+                Modifier.offset(x = sw * (L.timerPill.w * 0.05f), y = sw * (L.timerPill.h * 0.14f))
+                    .size(sw * (L.timerPill.h * 0.72f)),
             )
             val secs = hud.secondsLeft.coerceAtLeast(0)
             val label = "%02d:%02d".format(secs / 60, secs % 60)
@@ -113,7 +114,7 @@ fun Level3Hud(hud: HudState, art: ArtLibrary, onPause: () -> Unit) {
             OutlinedText(
                 label, ts(0.07f), Fonts.hud, FontWeight.ExtraBold,
                 modifier = Modifier.align(Alignment.CenterEnd)
-                    .offset(x = -maxWidth * (L.timerPill.w * 0.1f))
+                    .offset(x = -sw * (L.timerPill.w * 0.1f))
                     .scale(scale),
                 color = if (warn) Color(0xFFFF4D4D).copy(alpha = 0.65f + 0.35f * blink) else Color.White,
                 outlineWidth = wPx * 0.005f,
@@ -122,8 +123,8 @@ fun Level3Hud(hud: HudState, art: ArtLibrary, onPause: () -> Unit) {
 
         // Objective panel.
         Box(spot(L.objectivePanel)) {
-            val pw = maxWidth * L.objectivePanel.w
-            val ph = maxWidth * L.objectivePanel.h
+            val pw = sw * L.objectivePanel.w
+            val ph = sw * L.objectivePanel.h
             val lit = hud.kills * 5f / hud.required
             Canvas(Modifier.fillMaxSize()) {
                 hudPanel()
@@ -153,8 +154,8 @@ fun Level3Hud(hud: HudState, art: ArtLibrary, onPause: () -> Unit) {
 
         // Weapon panel.
         Box(spot(L.weaponPanel)) {
-            val pw = maxWidth * L.weaponPanel.w
-            val ph = maxWidth * L.weaponPanel.h
+            val pw = sw * L.weaponPanel.w
+            val ph = sw * L.weaponPanel.h
             Canvas(Modifier.fillMaxSize()) {
                 val flash = hud.overheated
                 hudPanel(
@@ -185,8 +186,8 @@ fun Level3Hud(hud: HudState, art: ArtLibrary, onPause: () -> Unit) {
 
         // Coin panel.
         Box(spot(L.coinPanel)) {
-            val pw = maxWidth * L.coinPanel.w
-            val ph = maxWidth * L.coinPanel.h
+            val pw = sw * L.coinPanel.w
+            val ph = sw * L.coinPanel.h
             Canvas(Modifier.fillMaxSize()) {
                 hudPanel(rimBrush = Brush.linearGradient(listOf(Palette.neonCyan, Palette.neonCyanSoft)))
             }

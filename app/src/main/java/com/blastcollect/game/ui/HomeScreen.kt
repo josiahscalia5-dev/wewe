@@ -292,19 +292,21 @@ private fun BoxWithConstraintsScope.BottomNav(art: ArtLibrary, tab: HomeTab, onT
             drawRoundRect(Palette.navBorder.copy(alpha = 0.8f), cornerRadius = r, style = Stroke(stroke))
         }
         BoxWithConstraints(Modifier.fillMaxSize()) {
-            val itemW = maxWidth / 4
+            val bw = maxWidth
+            val bh = maxHeight
+            val itemW = bw / 4
             HomeTab.entries.forEachIndexed { i, t ->
                 val selected = t == tab
                 Box(
-                    Modifier.offset(x = itemW * i).size(itemW, maxHeight)
+                    Modifier.offset(x = itemW * i).size(itemW, bh)
                         .clickable(remember { MutableInteractionSource() }, indication = null) { onTab(t) }
                         .semantics { contentDescription = t.label }
                         .testTag("nav_${t.name.lowercase()}"),
                 ) {
-                    val iconSize = maxWidth * (H.navIconSize / H.navBar.w)
+                    val iconSize = bw * (H.navIconSize / H.navBar.w)
                     Box(
                         Modifier.align(Alignment.TopCenter)
-                            .offset(y = maxHeight * H.navIconCy - iconSize / 2)
+                            .offset(y = bh * H.navIconCy - iconSize / 2)
                             .size(iconSize),
                     ) {
                         ArtImage(art, t.icon, Modifier.fillMaxSize(), alpha = if (selected || t == HomeTab.SHOP) 1f else 0.92f)
@@ -321,14 +323,14 @@ private fun BoxWithConstraintsScope.BottomNav(art: ArtLibrary, tab: HomeTab, onT
                     }
                     OutlinedText(
                         t.label, labelSize, Fonts.rounded, FontWeight.SemiBold,
-                        modifier = Modifier.align(Alignment.TopCenter).offset(y = maxHeight * H.navLabelCy - maxWidth * 0.045f),
+                        modifier = Modifier.align(Alignment.TopCenter).offset(y = bh * H.navLabelCy - bw * 0.045f),
                         color = if (selected) Color(0xFFBDF6FF) else Color(0xFFD7E0F0),
                         outlineWidth = 0f,
                     )
                     if (selected) {
                         Canvas(
-                            Modifier.align(Alignment.BottomCenter).offset(y = -maxHeight * 0.02f)
-                                .size(itemW * 0.78f, maxHeight * 0.06f),
+                            Modifier.align(Alignment.BottomCenter).offset(y = -bh * 0.02f)
+                                .size(itemW * 0.78f, bh * 0.06f),
                         ) {
                             val r = CornerRadius(size.height / 2f)
                             drawRoundRect(Palette.navSelected.copy(alpha = 0.25f), Offset(-size.height, -size.height), Size(size.width + size.height * 2, size.height * 3), CornerRadius(size.height * 1.5f))
