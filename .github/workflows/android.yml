@@ -87,6 +87,9 @@ jobs:
           set -e
           rm -rf /tmp/pub && mkdir -p /tmp/pub
           python3 ci/publish_snapshot.py verification /tmp/pub
+          mkdir -p /tmp/pub/apk
+          cp app/build/outputs/apk/debug/app-debug.apk /tmp/pub/apk/blast-and-collect-debug.apk 2>/dev/null || true
+          cp app/build/outputs/apk/release/app-release.apk /tmp/pub/apk/blast-and-collect-release.apk 2>/dev/null || true
           cd /tmp/pub
           git init -q
           git config user.name "ci-verification"

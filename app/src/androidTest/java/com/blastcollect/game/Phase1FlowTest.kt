@@ -11,6 +11,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.Configurator
 import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.UiSelector
 import androidx.test.uiautomator.Until
 import com.blastcollect.core.Facing
 import com.blastcollect.core.GameEvent
@@ -238,17 +239,29 @@ class Phase1FlowTest {
         val p3 = onMain { level().droneScreen(d3) }
         val (ax, ay) = screenPoint(p3.x, p3.y)
         val mxStart = onMain { level().player.x }
-        val down = SystemClock.uptimeMillis()
-        inject(MotionEvent.obtain(down, down, MotionEvent.ACTION_DOWN, vw * 0.55f, vh * 0.8f, 0))
-        sleep(60)
-        inject(multi(down, MotionEvent.ACTION_POINTER_DOWN or (1 shl MotionEvent.ACTION_POINTER_INDEX_SHIFT), vw * 0.55f, vh * 0.8f, ax, ay + 80f * density))
-        for (i in 1..12) {
-            sleep(30)
-            inject(multi(down, MotionEvent.ACTION_MOVE, vw * 0.55f - i * vw * 0.012f, vh * 0.8f, ax, ay + 80f * density))
+        val shotsBefore = onMain { level().totalShots }
+        // Finger 0 drags left in the move zone while finger 1 holds on the drone (aim zone).
+        val steps = 60
+        val moveFinger = Array(steps) { i ->
+            MotionEvent.PointerCoords().apply {
+                x = vw * 0.55f - vw * 0.14f * i / (steps - 1)
+                y = vh * 0.8f
+                pressure = 1f
+                this.size = 1f
+            }
         }
-        inject(multi(down, MotionEvent.ACTION_POINTER_UP or (1 shl MotionEvent.ACTION_POINTER_INDEX_SHIFT), vw * 0.41f, vh * 0.8f, ax, ay + 80f * density))
-        sleep(200)
-        inject(MotionEvent.obtain(down, SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, vw * 0.41f, vh * 0.8f, 0))
+        val aimFinger = Array(steps) {
+            MotionEvent.PointerCoords().apply {
+                x = ax
+                y = ay + 80f * density
+                pressure = 1f
+                this.size = 1f
+            }
+        }
+        val playArea = device.findObject(UiSelector().description("Level 3 play area"))
+        val gestureOk = playArea.performMultiPointerGesture(moveFinger, aimFinger)
+        note("multitouch gesture injected=$gestureOk shots ${shotsBefore}->${onMain { level().totalShots }} " +
+            "aiming=${onMain { level().aiming }} cover=${onMain { level().player.cover }} x=${onMain { level().player.x }}")
         waitFor("multitouch shot", 3000) { level().kills == kills + 1 }
         kills++
         note("multitouch: player.x $mxStart -> ${onMain { level().player.x }}")
@@ -256,7 +269,13 @@ class Phase1FlowTest {
 
         // Get caught: the robot is sent after the exposed player.
         onMain {
-            level().player.let { if (it.inCover) it.cover = -1 }
+            level().player.let {
+                if (it.inCover) {
+                    it.ignoreCover = it.cover
+                    it.cover = -1
+                    it.stand = 1f
+                }
+            }
             level().events.clear()
         }
         val before = onMain { level().timeLeft }
@@ -276,7 +295,9 @@ class Phase1FlowTest {
         sleep(400)
         val coverX = onMain {
             val l = level()
-            l.tuning.coverX.minByOrNull { kotlin.math.abs(it - l.player.x) }!!
+            l.tuning.coverX.indices.filter { it != l.player.ignoreCover }
+                .map { l.tuning.coverX[it] }
+                .minByOrNull { kotlin.math.abs(it - l.player.x) }!!
         }
         val targetStageX = onMain { level().camera.screenX(coverX * (1f - level().tuning.cameraFollow) + level().camera.panX, level().tuning.playerZ) }
         val startStageX = onMain { level().camera.screenX(level().player.x, level().tuning.playerZ) }

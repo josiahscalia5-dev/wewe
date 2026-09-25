@@ -205,7 +205,10 @@ add('bg_home', () => {
   const W = 1440, H = 3120;
   const cam = stageCamera({ f: 1750, cx: W / 2, cy: H * 0.5, W, H, camY: 1.45, far: 300 });
   const scene = buildWarehouse({ W: W * SS, H: H * SS, variant: 'home' });
-  return renderToCanvas(scene, cam, W, H, { composer: bloomComposer(scene, cam, W, H, { strength: 1.0, threshold: 0.78 }) });
+  getRenderer().toneMappingExposure = 0.62;
+  const out = renderToCanvas(scene, cam, W, H, { composer: bloomComposer(scene, cam, W, H, { strength: 0.5, radius: 0.4, threshold: 0.9 }) });
+  getRenderer().toneMappingExposure = 1.05;
+  return out;
 });
 
 // ------------------------------------------------------------------ props (420 px/m, base centre 140 px above the bottom)
@@ -297,7 +300,7 @@ add('icon_blaster', () => {
 // Home hero (1400x1324) and creatures (600x600).
 add('hero_robot', () => {
   const W = 1400, H = 1324;
-  const cam = stageCamera({ f: 2250, cx: 520, cy: 690, W, H, camY: 0.75 });
+  const cam = stageCamera({ f: 2250, cx: 520, cy: 640, W, H, camY: 0.85 });
   const scene = new THREE.Scene();
   characterLights(scene, { key: 2.4, rimL: 3.6, rimR: 3.6, fill: 0.8, keyDir: [-2, 3, 3] });
   const h = buildHero();

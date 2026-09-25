@@ -174,8 +174,8 @@ fun Level3Hud(hud: HudState, art: ArtLibrary, onPause: () -> Unit) {
             }
             ArtImage(
                 art, "icon_blaster",
-                Modifier.offset(x = pw * (L.wpnIconCx - L.wpnIconSize / 2f) - pw * 0.08f, y = ph / 2 - pw * (L.wpnIconSize / 2f) * 0.62f)
-                    .size(width = pw * L.wpnIconSize * 0.9f, height = pw * L.wpnIconSize * 0.62f),
+                Modifier.offset(x = pw * 0.05f, y = ph * 0.2f)
+                    .size(width = pw * 0.24f, height = ph * 0.6f),
             )
             OutlinedText(
                 "∞", ts(L.weaponPanel.w * 0.155f), Fonts.rounded, FontWeight.Bold,

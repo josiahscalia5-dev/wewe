@@ -19,9 +19,9 @@ export function buildDrone({ parts = 'all', rotor = 0, flash = false } = {}) {
   const black = flash ? red : plastic(0x0d0e12, { rough: 0.55, clearcoat: 0.3, env: 0.35 });
   const lens = emissive(0xfff6f2, 2.4, 0xff2a14);
   const lensRing = emissive(0xff1d0e, 1.6, 0xff1406);
-  const blade = plastic(0xd0101a, { rough: 0.25, clearcoat: 1, env: 0.8 });
-  blade.emissive = new THREE.Color(0xff1508);
-  blade.emissiveIntensity = 0.55;
+  const blade = plastic(0xa8060f, { rough: 0.25, clearcoat: 1, env: 0.5 });
+  blade.emissive = new THREE.Color(0xff0a04);
+  blade.emissiveIntensity = 0.35;
   blade.userData.glow = 0x9a0a04;
 
   const body = group();

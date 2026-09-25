@@ -9,8 +9,8 @@ const rb = (w, h, d, r = 0.05, s = 4) => new RoundedBoxGeometry(w, h, d, s, r);
 
 function mats(eyeBoost = 1) {
   return {
-    white: plastic(0x7c8090, { rough: 0.38, clearcoat: 0.6, env: 0.35 }),
-    grey: plastic(0x4a4e5b, { rough: 0.45, clearcoat: 0.4, env: 0.4 }),
+    white: plastic(0x5d6070, { rough: 0.36, clearcoat: 0.7, env: 0.35 }),
+    grey: plastic(0x3a3d49, { rough: 0.45, clearcoat: 0.4, env: 0.4 }),
     maroon: plastic(0x5a1422, { rough: 0.4, clearcoat: 0.6, env: 0.45 }),
     red: plastic(0x9a1c28, { rough: 0.34, clearcoat: 0.8, env: 0.5 }),
     steel: metal(0x2a2c35, { rough: 0.48, env: 0.5 }),

@@ -25,7 +25,7 @@ export function buildWarehouse({ W, H, variant = 'level' } = {}) {
   const reflector = new Reflector(new THREE.PlaneGeometry(floorW, floorD), {
     textureWidth: Math.round(W / 2),
     textureHeight: Math.round(H / 2),
-    color: 0x4a4466,
+    color: variant === 'home' ? 0x2a2840 : 0x363250,
     clipBias: 0.002,
   });
   reflector.rotation.x = -Math.PI / 2;
@@ -34,7 +34,7 @@ export function buildWarehouse({ W, H, variant = 'level' } = {}) {
   const ft = floorTexture({ seed: variant === 'home' ? 3 : 7 });
   ft.repeat.set(floorW / 8, floorD / 8);
   const floorMat = new THREE.MeshStandardMaterial({
-    map: ft, roughness: 0.24, metalness: 0.25, transparent: true, opacity: variant === 'home' ? 0.62 : 0.64,
+    map: ft, roughness: 0.24, metalness: 0.25, transparent: true, opacity: variant === 'home' ? 0.66 : 0.74,
   });
   const floor = mesh(new THREE.PlaneGeometry(floorW, floorD), floorMat, { rx: -Math.PI / 2, cast: false });
   floor.position.copy(G(0, 0, floorD / 2 - 1));
@@ -116,8 +116,8 @@ export function buildWarehouse({ W, H, variant = 'level' } = {}) {
     scene.add(place(R, rackX, 0, z, Math.PI / 2));
   });
   // Neon on the rack fronts: magenta left, cyan right.
-  const mag2 = emissive(0xff2fd0, 1.1, 0xa01080);
-  const cyan2 = emissive(0x2fc8ff, 0.9, 0x1070c0);
+  const mag2 = emissive(0xff2fd0, variant === 'home' ? 0.35 : 0.7, 0x800a60);
+  const cyan2 = emissive(0x2fc8ff, variant === 'home' ? 0.3 : 0.9, 0x1070c0);
   for (const z of rackZs) {
     scene.add(place(mesh(new THREE.BoxGeometry(0.05, 0.05, 2.4), mag2, { cast: false }), -rackX + 0.52, 4.45, z));
     scene.add(place(mesh(new THREE.BoxGeometry(0.05, 0.05, 2.4), cyan2, { cast: false }), rackX - 0.52, 4.45, z));
@@ -181,7 +181,7 @@ export function buildWarehouse({ W, H, variant = 'level' } = {}) {
   // Hanging lamps (warm).
   const lampShade = metal(0x1c1e26, { rough: 0.4 });
   const lampGlow = emissive(0xffb060, 1.6, 0xff9030);
-  const lampSpots = variant === 'home' ? [[0, 5], [-2.2, 9], [2.2, 12]] : [[0.4, 5.5], [-2.3, 9.5], [2.4, 11.0], [0, 15]];
+  const lampSpots = variant === 'home' ? [[-2.2, 11], [2.2, 14]] : [[0.4, 5.5], [-2.3, 9.5], [2.4, 11.0], [0, 15]];
   for (const [x, z] of lampSpots) {
     scene.add(place(mesh(new THREE.CylinderGeometry(0.01, 0.01, 1.4, 6), steel, { cast: false }), x, ceilY - 1.1, z));
     scene.add(place(mesh(new THREE.ConeGeometry(0.35, 0.28, 24, 1, true), lampShade, { cast: false }), x, ceilY - 1.9, z));
@@ -202,9 +202,9 @@ export function buildWarehouse({ W, H, variant = 'level' } = {}) {
     scene.add(p);
   };
   const leftNeon = variant === 'home' ? 0xd040ff : 0xff38d0;
-  pl(leftNeon, -2.1, 2.6, 6.5, 32);
-  pl(leftNeon, -2.1, 3.0, 11.0, 26);
-  pl(leftNeon, -1.6, 0.6, 4.5, 16, 5);
+  pl(leftNeon, -2.1, 2.6, 6.5, 22);
+  pl(leftNeon, -2.1, 3.0, 11.0, 18);
+  pl(leftNeon, -1.6, 0.6, 4.5, 10, 5);
   pl(0x3aa8ff, 2.1, 3.2, 7.5, 30);
   pl(0x3a90ff, 2.0, 3.8, 12.5, 24);
   pl(0xff7a20, 2.2, 0.6, 3.6, variant === 'home' ? 22 : 38, 7);

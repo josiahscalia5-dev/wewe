@@ -37,8 +37,6 @@ object LayoutSpec {
         const val objCountSize = 0.094f
 
         // Inside the weapon panel.
-        const val wpnIconCx = 0.225f
-        const val wpnIconSize = 0.40f
         const val wpnSegLeft = 0.305f
         const val wpnSegW = 0.074f
         const val wpnSegH = 0.33f
@@ -61,17 +59,21 @@ object LayoutSpec {
         val coinIcon = Spot(cx = 0.5237f, cy = 0.0513f, w = 0.0785f, h = 0.0785f)
         val plusButton = Spot(cx = 0.774f, cy = 0.0513f, w = 0.076f, h = 0.076f)
         val settingsButton = Spot(cx = 0.9078f, cy = 0.0510f, w = 0.1046f, h = 0.093f)
-        val logo = Spot(cx = 0.50f, cy = 0.1964f, w = 0.83f, h = 0.44f)
+        val logo = Spot(cx = 0.546f, cy = 0.1964f, w = 0.98f, h = 0.519f)
 
-        val heroRobot = Spot(cx = 0.486f, cy = 0.50f, w = 0.95f, h = 0.898f)
-        val heroMuzzle = Spot(cx = 0.905f, cy = 0.486f, w = 0.36f, h = 0.36f)
+        val heroRobot = Spot(cx = 0.47f, cy = 0.51f, w = 1.08f, h = 1.0214f)
+        /** Blaster muzzle inside the hero_robot canvas (fractions), where the flash is centred. */
+        const val heroMuzzleU = 0.8707f
+        const val heroMuzzleV = 0.5174f
+        /** hero_muzzle_flash size (fraction of width); its core sits 35% from its left edge. */
+        const val heroMuzzleSize = 0.36f
 
-        val creatureBlue = Spot(cx = 0.165f, cy = 0.360f, w = 0.25f, h = 0.25f)
-        val creatureYellow = Spot(cx = 0.655f, cy = 0.323f, w = 0.17f, h = 0.17f)
-        val creatureGreen = Spot(cx = 0.845f, cy = 0.370f, w = 0.20f, h = 0.20f)
-        val creatureRed = Spot(cx = 0.805f, cy = 0.466f, w = 0.21f, h = 0.21f)
-        val creaturePurple = Spot(cx = 0.098f, cy = 0.518f, w = 0.13f, h = 0.13f)
-        val creatureBlueSmall = Spot(cx = 0.872f, cy = 0.654f, w = 0.095f, h = 0.095f)
+        val creatureBlue = Spot(cx = 0.165f, cy = 0.360f, w = 0.338f, h = 0.338f)
+        val creatureYellow = Spot(cx = 0.655f, cy = 0.323f, w = 0.230f, h = 0.230f)
+        val creatureGreen = Spot(cx = 0.845f, cy = 0.370f, w = 0.270f, h = 0.270f)
+        val creatureRed = Spot(cx = 0.805f, cy = 0.466f, w = 0.284f, h = 0.284f)
+        val creaturePurple = Spot(cx = 0.098f, cy = 0.518f, w = 0.176f, h = 0.176f)
+        val creatureBlueSmall = Spot(cx = 0.872f, cy = 0.654f, w = 0.128f, h = 0.128f)
 
         /** Sparkles: cx, cy, size (fraction of width). */
         val sparkles = listOf(

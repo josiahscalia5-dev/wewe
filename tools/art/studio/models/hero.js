@@ -49,29 +49,29 @@ export function buildHero() {
 
   // Head / helmet.
   const head = group();
-  head.position.set(0, 0.6, 0.02);
+  head.position.set(0, 0.76, 0.05);
   head.rotation.set(0.05, 0.12, 0.06);
   torso.add(head);
-  const HR = 0.34;
+  const HR = 0.52;
   head.add(mesh(new THREE.SphereGeometry(HR, 72, 54), white, { sx: 1.08, sy: 0.96 }));
   const visor = mesh(new THREE.SphereGeometry(HR * 1.025, 72, 54, 0, Math.PI * 2, 0, 0.95), face, { rx: Math.PI / 2, sx: 1.08, sz: 0.96 });
   head.add(visor);
   // Eyes + smile on the visor.
   for (const sx of [-1, 1]) {
-    head.add(mesh(new THREE.SphereGeometry(0.062, 24, 18), eye, { x: sx * 0.11, y: 0.02, z: HR * 0.96, sx: 0.75, sy: 1.1, sz: 0.3, cast: false }));
+    head.add(mesh(new THREE.SphereGeometry(0.085, 24, 18), eye, { x: sx * 0.15, y: 0.03, z: HR * 0.965, sx: 0.75, sy: 1.1, sz: 0.3, cast: false }));
   }
-  const smile = mesh(new THREE.TorusGeometry(0.06, 0.009, 8, 24, Math.PI * 0.7), eye, { y: -0.08, z: HR * 0.97, rz: Math.PI + Math.PI * 0.15, cast: false });
+  const smile = mesh(new THREE.TorusGeometry(0.08, 0.012, 8, 24, Math.PI * 0.7), eye, { y: -0.11, z: HR * 0.975, rz: Math.PI + Math.PI * 0.15, cast: false });
   head.add(smile);
   // Ear discs.
   for (const sx of [-1, 1]) {
-    head.add(mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.06, 32), white, { x: sx * HR * 1.05, rz: Math.PI / 2 }));
-    head.add(mesh(new THREE.TorusGeometry(0.07, 0.016, 12, 32), cyanRing, { x: sx * HR * 1.09, ry: Math.PI / 2 }));
+    head.add(mesh(new THREE.CylinderGeometry(0.13, 0.13, 0.07, 32), white, { x: sx * HR * 1.05, rz: Math.PI / 2 }));
+    head.add(mesh(new THREE.TorusGeometry(0.09, 0.02, 12, 32), cyanRing, { x: sx * HR * 1.09, ry: Math.PI / 2 }));
   }
 
   // Left arm: punching forward.
   const la = group();
   la.position.set(-0.27, 0.28, 0);
-  la.rotation.set(-1.25, 0, -0.35);
+  la.rotation.set(-1.45, -0.3, 0.25);
   la.add(mesh(new THREE.SphereGeometry(0.08, 18, 12), black));
   la.add(mesh(rb(0.12, 0.2, 0.12, 0.05), white, { y: -0.12 }));
   la.add(mesh(rb(0.11, 0.14, 0.11, 0.05), black, { y: -0.27 }));
@@ -81,15 +81,15 @@ export function buildHero() {
   // Right arm with the big blue blaster pointing right (+x).
   const ra = group();
   ra.position.set(0.27, 0.26, 0);
-  ra.rotation.set(0, 0.35, 1.45);
+  ra.rotation.set(0, 0.35, 1.0);
   ra.add(mesh(new THREE.SphereGeometry(0.08, 18, 12), black));
   ra.add(mesh(rb(0.12, 0.22, 0.12, 0.05), white, { y: -0.12 }));
   ra.add(mesh(new THREE.SphereGeometry(0.075, 18, 12), black, { y: -0.26 }));
   torso.add(ra);
   const gun = buildBlaster({ len: 0.62, body: 0x2148d8, accent: 0x40d8ff, dark: 0x101528, scale: 1.25 });
   // Held in the right hand, barrel continuing along the arm.
-  gun.position.set(0.125, -0.2, 0.03);
-  gun.rotation.set(0, 0, -Math.PI / 2);
+  gun.position.set(0.083, -0.168, 0.03);
+  gun.rotation.set(0, 0, -1.1);
   ra.add(gun);
   return root;
 }

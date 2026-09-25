@@ -114,16 +114,25 @@ fun HomeScreen(
                     translationY = sin(time.value * 2f * PI.toFloat() / 2.4f) * wPx * 0.008f
                 },
             ) { ArtImage(art, "hero_robot", Modifier.fillMaxSize()) }
+            val heroLeft = maxWidth * (H.heroRobot.cx - H.heroRobot.w / 2f)
+            val heroTop = maxHeight * H.heroRobot.cy - maxWidth * (H.heroRobot.h / 2f)
+            val flashSize = maxWidth * H.heroMuzzleSize
             Box(
-                spot(H.heroMuzzle).graphicsLayer {
-                    val cycle = (time.value % 2.2f) / 2.2f
-                    val f = if (cycle < 0.14f) sin(cycle / 0.14f * PI.toFloat()) else 0f
-                    alpha = 0.25f + 0.75f * f
-                    scaleX = 0.8f + 0.35f * f
-                    scaleY = 0.8f + 0.35f * f
-                    translationY = sin(time.value * 2f * PI.toFloat() / 2.4f) * wPx * 0.008f
-                    transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0.35f, 0.5f)
-                },
+                Modifier
+                    .offset(
+                        x = heroLeft + maxWidth * (H.heroRobot.w * H.heroMuzzleU) - flashSize * 0.35f,
+                        y = heroTop + maxWidth * (H.heroRobot.h * H.heroMuzzleV) - flashSize / 2,
+                    )
+                    .size(flashSize)
+                    .graphicsLayer {
+                        val cycle = (time.value % 2.2f) / 2.2f
+                        val f = if (cycle < 0.14f) sin(cycle / 0.14f * PI.toFloat()) else 0f
+                        alpha = 0.25f + 0.75f * f
+                        scaleX = 0.8f + 0.35f * f
+                        scaleY = 0.8f + 0.35f * f
+                        translationY = sin(time.value * 2f * PI.toFloat() / 2.4f) * wPx * 0.008f
+                        transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0.35f, 0.5f)
+                    },
             ) { ArtImage(art, "hero_muzzle_flash", Modifier.fillMaxSize()) }
 
             // Logo.
