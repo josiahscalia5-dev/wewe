@@ -93,6 +93,8 @@ jobs:
           git config user.email "ci-verification@users.noreply.github.com"
           git checkout -q -b snapshot
           git add -A
+          echo "${GITHUB_SHA}" > COMMIT.txt
+          git add -A
           git commit -q -m "verification for ${GITHUB_SHA}"
           ref="refs/ci-verification/$(echo "${GITHUB_REF_NAME}" | tr '/' '-')"
           git push -q -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:${ref}" && echo "published ${ref}"

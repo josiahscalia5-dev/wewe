@@ -7,7 +7,10 @@ plugins {
 
 android {
     namespace = "com.blastcollect.game"
-    compileSdk = 36
+    // The current stable AndroidX/Compose releases (BOM 2026.09.00, core 1.19.1,
+    // lifecycle 2.11.0) require compiling against API 37. Runtime behaviour follows
+    // targetSdk 36, which meets the Google Play requirement.
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.blastcollect.game"
