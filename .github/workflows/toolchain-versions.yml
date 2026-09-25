@@ -1,0 +1,61 @@
+# Prints the current stable Android toolchain / library versions from the
+# official repositories so pinned versions in gradle/libs.versions.toml can be
+# checked against "latest stable" at build time (brief section 2).
+name: Toolchain versions
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/toolchain-versions.yml
+
+jobs:
+  versions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Latest stable versions
+        shell: bash
+        run: |
+          set -u
+          gmaven() { # group-path artifact
+            curl -fsSL "https://dl.google.com/dl/android/maven2/$1/$2/maven-metadata.xml" \
+              | grep -o '<version>[^<]*' | sed 's/<version>//' \
+              | grep -viE 'alpha|beta|rc|dev|snapshot' | tail -1
+          }
+          central() {
+            curl -fsSL "https://repo1.maven.org/maven2/$1/$2/maven-metadata.xml" \
+              | grep -o '<version>[^<]*' | sed 's/<version>//' \
+              | grep -viE 'alpha|beta|rc|dev|snapshot|-M[0-9]' | tail -1
+          }
+          echo "VERSION gradle=$(curl -fsSL https://services.gradle.org/versions/current | python3 -c 'import sys,json;print(json.load(sys.stdin)["version"])')"
+          echo "VERSION agp=$(gmaven com/android/tools/build gradle)"
+          echo "VERSION compose-bom=$(gmaven androidx/compose compose-bom)"
+          echo "VERSION activity-compose=$(gmaven androidx/activity activity-compose)"
+          echo "VERSION core-ktx=$(gmaven androidx/core core-ktx)"
+          echo "VERSION lifecycle=$(gmaven androidx/lifecycle lifecycle-runtime-compose)"
+          echo "VERSION datastore=$(gmaven androidx/datastore datastore-preferences)"
+          echo "VERSION navigation-compose=$(gmaven androidx/navigation navigation-compose)"
+          echo "VERSION test-runner=$(gmaven androidx/test runner)"
+          echo "VERSION test-rules=$(gmaven androidx/test rules)"
+          echo "VERSION test-ext-junit=$(gmaven androidx/test/ext junit)"
+          echo "VERSION uiautomator=$(gmaven androidx/test/uiautomator uiautomator)"
+          echo "VERSION espresso=$(gmaven androidx/test/espresso espresso-core)"
+          echo "VERSION kotlin=$(central org/jetbrains/kotlin kotlin-gradle-plugin)"
+          echo "VERSION coroutines=$(central org/jetbrains/kotlinx kotlinx-coroutines-core)"
+          echo "VERSION junit4=$(central junit junit)"
+          echo "VERSION robolectric=$(central org/robolectric robolectric)"
+          echo "VERSION roborazzi=$(central io/github/takahirom/roborazzi roborazzi)"
+          echo "VERSION emulator-runner=$(curl -fsSL https://api.github.com/repos/ReactiveCircus/android-emulator-runner/releases/latest | python3 -c 'import sys,json;print(json.load(sys.stdin)["tag_name"])')"
+          echo "SDK build-tools installed:"; ls "$ANDROID_HOME/build-tools" || true
+          echo "SDK platforms installed:"; ls "$ANDROID_HOME/platforms" || true
+          echo "sdkmanager available packages (platforms/build-tools/system-images 36):"
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --list 2>/dev/null \
+            | grep -E '^\s*(platforms;android-3[5-7]|build-tools;3[5-7]|system-images;android-3[6-7];google_apis;x86_64|system-images;android-3[6-7];default;x86_64|system-images;android-3[6-7];google_apis_playstore;x86_64)' \
+            | sort -u || true
+      - name: Artifact round-trip probe
+        run: |
+          mkdir -p probe && echo "probe $(date -u)" > probe/probe.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: probe
+          path: probe/

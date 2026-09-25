@@ -1,0 +1,17 @@
+# Gradle / Android
+.gradle/
+build/
+local.properties
+*.iml
+.idea/
+.cxx/
+.externalNativeBuild/
+captures/
+*.apk
+*.aab
+!art/**
+# OS
+.DS_Store
+# tooling scratch
+/tools/art/node_modules/
+/tools/art/out/
