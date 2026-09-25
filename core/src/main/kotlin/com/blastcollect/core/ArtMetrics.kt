@@ -21,16 +21,16 @@ object ArtMetrics {
     const val ASTRO_ANCHOR_Y = 1080f
     const val ASTRO_PX_PER_M = 780f
     /** Right shoulder (screen right) where the blaster arm is attached. */
-    const val ASTRO_SHOULDER_X = 618f
-    const val ASTRO_SHOULDER_Y = 590f
+    const val ASTRO_SHOULDER_X = 608f
+    const val ASTRO_SHOULDER_Y = 520f
 
     // Blaster arm (astro_arm_blaster.png), drawn pointing along +x and rotated to the aim.
     const val ARM_W = 760
     const val ARM_H = 320
     const val ARM_PIVOT_X = 96f
     const val ARM_PIVOT_Y = 170f
-    const val ARM_MUZZLE_X = 732f
-    const val ARM_MUZZLE_Y = 150f
+    const val ARM_MUZZLE_X = 681f
+    const val ARM_MUZZLE_Y = 151f
     /** Arm rotation limits in degrees (screen coordinates: negative = up). */
     const val ARM_MIN_DEG = -168f
     const val ARM_MAX_DEG = -8f
@@ -46,7 +46,7 @@ object ArtMetrics {
 
     // Props (cover_*.png): bottom-centre anchor, same scale for every prop.
     const val PROP_PX_PER_M = 420f
-    const val PROP_ANCHOR_BOTTOM_PAD = 12f
+    const val PROP_ANCHOR_BOTTOM_PAD = 140f
 
     // Drone frames (drone_*.png), body centre in the middle of the canvas.
     const val DRONE_W = 800

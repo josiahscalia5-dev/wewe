@@ -179,7 +179,7 @@ fun Level3Hud(hud: HudState, art: ArtLibrary, onPause: () -> Unit) {
             )
             OutlinedText(
                 "∞", ts(L.weaponPanel.w * 0.155f), Fonts.rounded, FontWeight.Bold,
-                modifier = Modifier.offset(x = pw * (L.wpnInfCx - 0.07f), y = ph * 0.12f),
+                modifier = Modifier.offset(x = pw * L.wpnInfLeft, y = ph * 0.12f),
                 outlineWidth = 0f,
             )
         }

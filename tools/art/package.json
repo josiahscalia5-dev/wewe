@@ -4,10 +4,10 @@
   "description": "Renders the interim art layers in /art from 3D/vector sources (placeholders until production art is supplied).",
   "type": "module",
   "scripts": {
-    "render": "node render.mjs"
+    "build": "node render.mjs && python3 trim.py"
   },
   "dependencies": {
-    "playwright-core": "1.56",
-    "three": "^0.186.1"
+    "playwright-core": "1.56.1",
+    "three": "0.186.1"
   }
 }

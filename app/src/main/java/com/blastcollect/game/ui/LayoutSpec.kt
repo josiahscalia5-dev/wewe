@@ -43,7 +43,7 @@ object LayoutSpec {
         const val wpnSegW = 0.074f
         const val wpnSegH = 0.33f
         const val wpnSegGap = 0.022f
-        const val wpnInfCx = 0.83f
+        const val wpnInfLeft = 0.815f
 
         // Inside the coin panel.
         const val coinIconCx = 0.28f
@@ -63,8 +63,8 @@ object LayoutSpec {
         val settingsButton = Spot(cx = 0.9078f, cy = 0.0510f, w = 0.1046f, h = 0.093f)
         val logo = Spot(cx = 0.50f, cy = 0.1964f, w = 0.83f, h = 0.44f)
 
-        val heroRobot = Spot(cx = 0.49f, cy = 0.5105f, w = 0.74f, h = 0.70f)
-        val heroMuzzle = Spot(cx = 0.845f, cy = 0.588f, w = 0.36f, h = 0.30f)
+        val heroRobot = Spot(cx = 0.486f, cy = 0.50f, w = 0.95f, h = 0.898f)
+        val heroMuzzle = Spot(cx = 0.905f, cy = 0.486f, w = 0.36f, h = 0.36f)
 
         val creatureBlue = Spot(cx = 0.165f, cy = 0.360f, w = 0.25f, h = 0.25f)
         val creatureYellow = Spot(cx = 0.655f, cy = 0.323f, w = 0.17f, h = 0.17f)

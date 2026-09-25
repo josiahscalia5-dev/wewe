@@ -1,6 +1,7 @@
 package com.blastcollect.game
 
 import android.content.Intent
+import android.os.Looper
 import android.os.ParcelFileDescriptor
 import android.os.SystemClock
 import android.view.InputDevice
@@ -8,6 +9,7 @@ import android.view.MotionEvent
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
+import androidx.test.uiautomator.Configurator
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
 import com.blastcollect.core.Facing
@@ -52,13 +54,15 @@ class Phase1FlowTest {
         android.util.Log.i("Phase1Flow", s)
     }
 
+    // No waitForIdleSync(): the game animates every frame, so the main thread is never idle
+    // for long and idle waits stall for tens of seconds.
     private fun shot(name: String) {
-        inst.waitForIdleSync()
         shell("screencap -p $out/$name.png")
         note("screenshot $name")
     }
 
     private fun <T> onMain(block: () -> T): T {
+        if (Looper.myLooper() == Looper.getMainLooper()) return block()
         var r: Any? = null
         inst.runOnMainSync { r = block() }
         @Suppress("UNCHECKED_CAST")
@@ -156,6 +160,11 @@ class Phase1FlowTest {
 
     @Test
     fun phase1Flow() {
+        Configurator.getInstance().apply {
+            waitForIdleTimeout = 100
+            waitForSelectorTimeout = 100
+            actionAcknowledgmentTimeout = 100
+        }
         shell("mkdir -p $out")
         shell("rm -f $out/*")
         shell("svc power stayon true")

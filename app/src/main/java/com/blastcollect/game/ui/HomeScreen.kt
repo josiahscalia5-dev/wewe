@@ -122,7 +122,7 @@ fun HomeScreen(
                     scaleX = 0.8f + 0.35f * f
                     scaleY = 0.8f + 0.35f * f
                     translationY = sin(time.value * 2f * PI.toFloat() / 2.4f) * wPx * 0.008f
-                    transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0.25f, 0.5f)
+                    transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0.35f, 0.5f)
                 },
             ) { ArtImage(art, "hero_muzzle_flash", Modifier.fillMaxSize()) }
 

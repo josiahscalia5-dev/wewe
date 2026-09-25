@@ -15,3 +15,5 @@ captures/
 # tooling scratch
 /tools/art/node_modules/
 /tools/art/out/
+# local render scratch
+/tools/preview/*.png

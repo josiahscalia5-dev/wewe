@@ -14,6 +14,6 @@ object Level3Props {
         Prop("cover_crates_mid_3", 1.35f, 3.95f),
         Prop("cover_forklift_right", 0.80f, 3.0f, cover = 2),
         Prop("cover_crates_left", -0.62f, 2.85f, cover = 0),
-        Prop("cover_crates_mid_1", 0.02f, 2.8f, cover = 1),
+        Prop("cover_crates_mid_1", 0.02f, 3.3f, cover = 1),
     )
 }
