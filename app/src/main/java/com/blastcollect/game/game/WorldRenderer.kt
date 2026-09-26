@@ -25,6 +25,7 @@ import kotlin.math.atan2
 import kotlin.math.hypot
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.sign
 import kotlin.math.sin
 
 /**
@@ -198,7 +199,7 @@ class WorldRenderer(private val art: ArtLibrary) {
             val pulse = 0.85f + 0.15f * sin(time * 14f)
             val gs = cam.pxPerMetre(r.z) * (0.55f + 0.45f * flare) * pulse
             addPaint.alpha = (255 * ((flare - 0.3f) / 0.7f)).toInt().coerceIn(0, 255)
-            val ey = ay - 1.83f * cam.pxPerMetre(r.z)
+            val ey = ay - ArtMetrics.ROBOT_EYE_M * cam.pxPerMetre(r.z)
             drawLayer(c, glow, ax - gs / 2f, ey - gs / 2f, gs, gs, addPaint)
             addPaint.alpha = 255
         }
@@ -255,12 +256,8 @@ class WorldRenderer(private val art: ArtLibrary) {
         return when {
             p.stunned -> "astro_stunned"
             p.ducked -> "astro_duck_cover"
-            abs(p.velocity) > 0.05f -> {
-                val dir = if (p.velocity < 0f) "left" else "right"
-                Layers.strafe(dir, ((p.runTime * 11f).toInt()) % Layers.STRAFE_FRAMES)
-            }
-            level.muzzleFlash > 0f -> "astro_fire"
-            else -> "astro_aim_idle"
+            // Supplied art: one sprite per aim direction (blaster in hand), picked by the aim.
+            else -> ArtMetrics.AIM_POSES[level.aimPose()]
         }
     }
 
@@ -271,19 +268,16 @@ class WorldRenderer(private val art: ArtLibrary) {
         val w = ArtMetrics.ASTRO_W * s
         val h = ArtMetrics.ASTRO_H * s
         val left = a.x - ArtMetrics.ASTRO_ANCHOR_X * s
-        val top = a.y - ArtMetrics.ASTRO_ANCHOR_Y * s
+        // Running: a quick bob and a lean into the direction of travel.
+        val running = abs(p.velocity) > 0.05f && !p.stunned && !p.ducked
+        val bob = if (running) abs(sin(p.runTime * 11f)) * 22f * s else 0f
+        val top = a.y - ArtMetrics.ASTRO_ANCHOR_Y * s - bob
+        c.save()
+        if (running) c.rotate(sign(p.velocity) * 3f, a.x, a.y)
         drawLayer(c, layer(astronautLayerName(level)), left, top, w, h)
+        c.restore()
 
         if (p.stunned || p.ducked) return
-        val sh = level.shoulder()
-        c.save()
-        c.rotate(level.armAngle, sh.x, sh.y)
-        drawLayer(
-            c, layer("astro_arm_blaster"),
-            sh.x - ArtMetrics.ARM_PIVOT_X * s, sh.y - ArtMetrics.ARM_PIVOT_Y * s,
-            ArtMetrics.ARM_W * s, ArtMetrics.ARM_H * s,
-        )
-        c.restore()
 
         if (level.muzzleFlash > 0f) {
             val m = level.muzzle()

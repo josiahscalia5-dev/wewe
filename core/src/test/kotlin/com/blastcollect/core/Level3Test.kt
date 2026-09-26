@@ -246,7 +246,7 @@ class Level3Test {
         g.run(1f)
         g.endMove()
         assertEquals(-1, g.player.cover)
-        assertTrue(g.player.x < g.tuning.coverX[0] - 0.1f)
+        assertTrue(g.player.x < g.tuning.coverX[0])
         assertTrue(g.player.exposed)
     }
 

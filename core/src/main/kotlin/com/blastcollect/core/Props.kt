@@ -10,10 +10,9 @@ object Level3Props {
      * reference/2376.png shows it; mid-ground crates are part of bg_warehouse.
      */
     val all = listOf(
-        // Each cover prop stands just beyond the strip where it hides the astronaut when he
-        // is at its cover spot (the follow camera keeps him in the lower-left of the screen).
-        Prop("cover_forklift_right", 0.85f, 3.3f, cover = 1),
-        Prop("cover_crates_mid_1", 1.47f, 2.85f, cover = 2),
-        Prop("cover_crates_left", -1.07f, 2.75f, cover = 0),
+        // Each crate stack stands just beyond the strip, right behind the astronaut when he
+        // is at its cover spot (x scaled by depth so it lines up on screen).
+        Prop("cover_crates_left", -0.806f, 2.6f, cover = 0),
+        Prop("cover_crates_mid_1", 0.65f, 2.6f, cover = 1),
     )
 }

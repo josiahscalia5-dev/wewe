@@ -41,7 +41,7 @@ class Level3(
     val robot = Robot(1.35f, 6.2f)
 
     init {
-        camera.panX = player.x + tuning.cameraShoulder
+        camera.panX = player.x * tuning.cameraFollow + tuning.cameraShoulder
     }
     val drones = mutableListOf<Drone>()
     val bolts = mutableListOf<Bolt>()
@@ -255,7 +255,7 @@ class Level3(
 
         p.velocity = (p.x - prevX) / dt
         if (abs(p.velocity) > 0.05f) p.runTime += dt else p.runTime = 0f
-        camera.panX = p.x + tuning.cameraShoulder
+        camera.panX = p.x * tuning.cameraFollow + tuning.cameraShoulder
     }
 
     private fun moveBy(dx: Float) {
@@ -376,15 +376,24 @@ class Level3(
         return up.coerceIn(ArtMetrics.ARM_MIN_DEG, ArtMetrics.ARM_MAX_DEG)
     }
 
+    /** Index into [ArtMetrics.AIM_POSES] of the pose whose blaster points closest to the aim. */
+    fun aimPose(): Int {
+        var best = 0
+        for (i in ArtMetrics.AIM_DEG.indices) {
+            if (abs(ArtMetrics.AIM_DEG[i] - armAngle) < abs(ArtMetrics.AIM_DEG[best] - armAngle)) best = i
+        }
+        return best
+    }
+
+    /** Tip of the blaster in the current aim pose (the laser starts here). */
     fun muzzle(): Point {
-        val sh = shoulder()
+        val a = astronautAnchor()
         val s = astronautScale()
-        val mx = (ArtMetrics.ARM_MUZZLE_X - ArtMetrics.ARM_PIVOT_X) * s
-        val my = (ArtMetrics.ARM_MUZZLE_Y - ArtMetrics.ARM_PIVOT_Y) * s
-        val r = Math.toRadians(armAngle.toDouble())
-        val c = cos(r).toFloat()
-        val si = sin(r).toFloat()
-        return Point(sh.x + mx * c - my * si, sh.y + mx * si + my * c)
+        val i = aimPose()
+        return Point(
+            a.x + (ArtMetrics.AIM_MUZZLE_X[i] - ArtMetrics.ASTRO_ANCHOR_X) * s,
+            a.y + (ArtMetrics.AIM_MUZZLE_Y[i] - ArtMetrics.ASTRO_ANCHOR_Y) * s,
+        )
     }
 
     // ---------------------------------------------------------------- bolts & hits
@@ -781,7 +790,7 @@ class Level3(
         player.cover = -1
         player.ignoreCover = -1
         player.stand = 1f
-        camera.panX = player.x + tuning.cameraShoulder
+        camera.panX = player.x * tuning.cameraFollow + tuning.cameraShoulder
     }
 
     fun debugSetTimeLeft(seconds: Float) {
@@ -864,7 +873,7 @@ class Level3(
         player.x = tuning.playerStartX
         player.cover = -1
         player.stand = 1f
-        camera.panX = player.x + tuning.cameraShoulder
+        camera.panX = player.x * tuning.cameraFollow + tuning.cameraShoulder
         drones.clear()
         spawnTimer = 999f
         debugSpawnDroneAtScreen(0.33f * Stage.W, 0.365f * Stage.H, 4.3f, frozen = true).age = 0.4f

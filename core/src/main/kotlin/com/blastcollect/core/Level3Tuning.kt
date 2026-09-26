@@ -13,21 +13,23 @@ class Level3Tuning(
     val timerWarningAt: Float = 10f,
 
     // Player (front strip)
-    val playerZ: Float = 1.85f,
-    val playerMinX: Float = -1.3f,
-    val playerMaxX: Float = 1.6f,
-    val playerStartX: Float = -0.60f,
+    val playerZ: Float = 2.0f,
+    val playerMinX: Float = -0.66f,
+    val playerMaxX: Float = 0.54f,
+    /** The astronaut starts in the lower-left, where reference/2376 shows him. */
+    val playerStartX: Float = -0.48f,
     val playerSpeed: Float = 1.05f,
     /**
-     * Third-person follow camera (reference/2376): the camera sits this far to the right
-     * of the astronaut, so he always stands in the lower-left of the screen and the
-     * warehouse pans past as he moves.
+     * Camera x = player x * [cameraFollow] + [cameraShoulder]. The supplied background is
+     * a painted plate (forklift and crates painted in), so the camera stays fixed and the
+     * astronaut moves across the foreground.
      */
-    val cameraShoulder: Float = 0.45f,
-    /** Metres the astronaut moves per stage px of horizontal drag in the move zone. */
-    val dragMetresPerPx: Float = 0.0026f,
-    /** Cover spots on the front strip: left crate stack, forklift, right crate stack. */
-    val coverX: FloatArray = floatArrayOf(-1.05f, 0.85f, 1.45f),
+    val cameraFollow: Float = 0f,
+    val cameraShoulder: Float = 0f,
+    /** Metres the astronaut moves per stage px of horizontal drag (≈ 1:1 with the finger). */
+    val dragMetresPerPx: Float = 0.00143f,
+    /** Cover spots on the front strip: crates bottom-left, crates bottom-right. */
+    val coverX: FloatArray = floatArrayOf(-0.62f, 0.5f),
     val coverSnap: Float = 0.085f,
     /** How far past the cover spot a drag must reach before the astronaut leaves cover. */
     val coverExitDrag: Float = 0.16f,
