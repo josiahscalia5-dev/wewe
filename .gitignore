@@ -17,3 +17,6 @@ captures/
 /tools/art/out/
 # local render scratch
 /tools/preview/*.png
+# Real-ESRGAN weights (download, see tools/art/esrgan.py)
+/tools/art/*.pth
+__pycache__/
